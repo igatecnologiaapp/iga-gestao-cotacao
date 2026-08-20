@@ -15,6 +15,8 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedCompararRouteImport } from './routes/_authenticated/comparar'
 import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated/inicio'
 import { Route as AuthenticatedNovaRouteImport } from './routes/_authenticated/nova'
+import { Route as AuthenticatedOportunidadesRouteImport } from './routes/_authenticated/oportunidades'
+import { Route as AuthenticatedProdutosRouteImport } from './routes/_authenticated/produtos'
 import { Route as AuthenticatedCotacoesIndexRouteImport } from './routes/_authenticated/cotacoes.index'
 import { Route as AuthenticatedCotacoesIdRouteImport } from './routes/_authenticated/cotacoes.$id'
 
@@ -47,6 +49,17 @@ const AuthenticatedNovaRoute = AuthenticatedNovaRouteImport.update({
   path: '/nova',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedOportunidadesRoute =
+  AuthenticatedOportunidadesRouteImport.update({
+    id: '/oportunidades',
+    path: '/oportunidades',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProdutosRoute = AuthenticatedProdutosRouteImport.update({
+  id: '/produtos',
+  path: '/produtos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCotacoesIndexRoute =
   AuthenticatedCotacoesIndexRouteImport.update({
     id: '/cotacoes/',
@@ -65,6 +78,8 @@ export interface FileRoutesByFullPath {
   '/comparar': typeof AuthenticatedCompararRoute
   '/inicio': typeof AuthenticatedInicioRoute
   '/nova': typeof AuthenticatedNovaRoute
+  '/oportunidades': typeof AuthenticatedOportunidadesRoute
+  '/produtos': typeof AuthenticatedProdutosRoute
   '/cotacoes/$id': typeof AuthenticatedCotacoesIdRoute
   '/cotacoes/': typeof AuthenticatedCotacoesIndexRoute
 }
@@ -74,6 +89,8 @@ export interface FileRoutesByTo {
   '/comparar': typeof AuthenticatedCompararRoute
   '/inicio': typeof AuthenticatedInicioRoute
   '/nova': typeof AuthenticatedNovaRoute
+  '/oportunidades': typeof AuthenticatedOportunidadesRoute
+  '/produtos': typeof AuthenticatedProdutosRoute
   '/cotacoes/$id': typeof AuthenticatedCotacoesIdRoute
   '/cotacoes': typeof AuthenticatedCotacoesIndexRoute
 }
@@ -85,6 +102,8 @@ export interface FileRoutesById {
   '/_authenticated/comparar': typeof AuthenticatedCompararRoute
   '/_authenticated/inicio': typeof AuthenticatedInicioRoute
   '/_authenticated/nova': typeof AuthenticatedNovaRoute
+  '/_authenticated/oportunidades': typeof AuthenticatedOportunidadesRoute
+  '/_authenticated/produtos': typeof AuthenticatedProdutosRoute
   '/_authenticated/cotacoes/$id': typeof AuthenticatedCotacoesIdRoute
   '/_authenticated/cotacoes/': typeof AuthenticatedCotacoesIndexRoute
 }
@@ -96,6 +115,8 @@ export interface FileRouteTypes {
     | '/comparar'
     | '/inicio'
     | '/nova'
+    | '/oportunidades'
+    | '/produtos'
     | '/cotacoes/$id'
     | '/cotacoes/'
   fileRoutesByTo: FileRoutesByTo
@@ -105,6 +126,8 @@ export interface FileRouteTypes {
     | '/comparar'
     | '/inicio'
     | '/nova'
+    | '/oportunidades'
+    | '/produtos'
     | '/cotacoes/$id'
     | '/cotacoes'
   id:
@@ -115,6 +138,8 @@ export interface FileRouteTypes {
     | '/_authenticated/comparar'
     | '/_authenticated/inicio'
     | '/_authenticated/nova'
+    | '/_authenticated/oportunidades'
+    | '/_authenticated/produtos'
     | '/_authenticated/cotacoes/$id'
     | '/_authenticated/cotacoes/'
   fileRoutesById: FileRoutesById
@@ -169,6 +194,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNovaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/oportunidades': {
+      id: '/_authenticated/oportunidades'
+      path: '/oportunidades'
+      fullPath: '/oportunidades'
+      preLoaderRoute: typeof AuthenticatedOportunidadesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/produtos': {
+      id: '/_authenticated/produtos'
+      path: '/produtos'
+      fullPath: '/produtos'
+      preLoaderRoute: typeof AuthenticatedProdutosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/cotacoes/': {
       id: '/_authenticated/cotacoes/'
       path: '/cotacoes'
@@ -190,6 +229,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCompararRoute: typeof AuthenticatedCompararRoute
   AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
   AuthenticatedNovaRoute: typeof AuthenticatedNovaRoute
+  AuthenticatedOportunidadesRoute: typeof AuthenticatedOportunidadesRoute
+  AuthenticatedProdutosRoute: typeof AuthenticatedProdutosRoute
   AuthenticatedCotacoesIdRoute: typeof AuthenticatedCotacoesIdRoute
   AuthenticatedCotacoesIndexRoute: typeof AuthenticatedCotacoesIndexRoute
 }
@@ -198,6 +239,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCompararRoute: AuthenticatedCompararRoute,
   AuthenticatedInicioRoute: AuthenticatedInicioRoute,
   AuthenticatedNovaRoute: AuthenticatedNovaRoute,
+  AuthenticatedOportunidadesRoute: AuthenticatedOportunidadesRoute,
+  AuthenticatedProdutosRoute: AuthenticatedProdutosRoute,
   AuthenticatedCotacoesIdRoute: AuthenticatedCotacoesIdRoute,
   AuthenticatedCotacoesIndexRoute: AuthenticatedCotacoesIndexRoute,
 }
