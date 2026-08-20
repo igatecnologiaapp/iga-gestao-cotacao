@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
-import { normalize } from "./cotacao";
+import { chaveProduto, interesseAgregado } from "./cotacao";
 
 export type Fornecedor = Database["public"]["Tables"]["fornecedores"]["Row"];
 export type Segmento = Database["public"]["Tables"]["segmentos"]["Row"];
@@ -48,6 +48,7 @@ export function useInvalidateAll() {
     qc.invalidateQueries({ queryKey: ["cotacoes"] });
     qc.invalidateQueries({ queryKey: ["fornecedores"] });
     qc.invalidateQueries({ queryKey: ["segmentos"] });
+    qc.invalidateQueries({ queryKey: ["pedidos"] });
   };
 }
 
@@ -62,15 +63,20 @@ export type ProdutoResumo = {
   menor: number;
   maior: number;
   medio: number;
+  /** Interesse agregado (média ponderada) — ver interesseAgregado. */
   interesse: number;
+  /** Interesse do registro mais recente. */
+  interesseRecente: number;
+  /** Unidades distintas encontradas — comparação só é segura com uma unidade. */
+  unidades: string[];
 };
 
-/** Agrupa todos os itens cotados por descrição (chave normalizada). */
+/** Agrupa todos os itens cotados por chave normalizada da descrição. */
 export function agruparProdutos(cotacoes: CotacaoFull[]): ProdutoResumo[] {
   const mapa = new Map<string, ProdutoResumo>();
   for (const cot of cotacoes) {
     for (const item of cot.itens ?? []) {
-      const chave = normalize(item.descricao);
+      const chave = chaveProduto(item.descricao);
       let grupo = mapa.get(chave);
       if (!grupo) {
         grupo = {
@@ -82,6 +88,8 @@ export function agruparProdutos(cotacoes: CotacaoFull[]): ProdutoResumo[] {
           maior: 0,
           medio: 0,
           interesse: 0,
+          interesseRecente: 3,
+          unidades: [],
         };
         mapa.set(chave, grupo);
       }
@@ -95,11 +103,23 @@ export function agruparProdutos(cotacoes: CotacaoFull[]): ProdutoResumo[] {
     g.maior = Math.max(...valores);
     g.medio = valores.reduce((a, b) => a + b, 0) / valores.length;
     g.fornecedores = new Set(g.registros.map((r) => r.cotacao.fornecedor_id)).size;
-    g.interesse = Math.max(...g.registros.map((r) => r.item.interesse));
+    g.interesse = interesseAgregado(g.registros.map((r) => r.item.interesse));
+    g.unidades = [...new Set(g.registros.map((r) => r.item.unidade ?? "UN"))];
+    const cronologico = [...g.registros].sort(
+      (a, b) => +new Date(a.cotacao.created_at) - +new Date(b.cotacao.created_at),
+    );
+    g.interesseRecente = cronologico.at(-1)?.item.interesse ?? 3;
     g.registros.sort((a, b) => Number(a.item.valor) - Number(b.item.valor));
   }
   lista.sort((a, b) => b.registros.length - a.registros.length);
   return lista;
+}
+
+/** Histórico cronológico (mais antigo → mais recente) de um grupo de produto. */
+export function historicoProduto(grupo: ProdutoResumo) {
+  return [...grupo.registros].sort(
+    (a, b) => +new Date(a.cotacao.created_at) - +new Date(b.cotacao.created_at),
+  );
 }
 
 export function totalCotacao(cot: CotacaoFull) {
@@ -112,5 +132,29 @@ export function totalCotacao(cot: CotacaoFull) {
 export function interessePredominante(cot: CotacaoFull) {
   const itens = cot.itens ?? [];
   if (!itens.length) return 3;
-  return Math.max(...itens.map((i) => i.interesse));
+  return interesseAgregado(itens.map((i) => i.interesse));
+}
+
+export type Pedido = Database["public"]["Tables"]["pedidos_compra"]["Row"];
+export type PedidoItem = {
+  id: string;
+  descricao: string;
+  quantidade: number;
+  unidade: string;
+  valor: number;
+  subtotal: number;
+  condicoes: string;
+};
+
+export async function fetchPedidos(): Promise<Pedido[]> {
+  const { data, error } = await supabase
+    .from("pedidos_compra")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export function usePedidos() {
+  return useQuery({ queryKey: ["pedidos"], queryFn: fetchPedidos });
 }

@@ -18,10 +18,13 @@ export const INTERESSE_OPTIONS = [
 
 export const UNIDADES = ["UN", "CX", "KG", "LT", "PCT", "FD", "MT", "KIT"] as const;
 
-export const UFS = [
+const UFS_DEMAIS = [
   "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR",
-  "PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
-];
+  "PE","PI","RJ","RN","RS","RO","RR","SC","SE","TO",
+].sort();
+
+/** SP primeiro (operação predominante), depois as demais em ordem alfabética. */
+export const UFS = ["SP", ...UFS_DEMAIS];
 
 export function statusLabel(value: string) {
   return STATUS_OPTIONS.find((s) => s.value === value)?.label ?? value;
@@ -73,4 +76,38 @@ export function normalize(text: string) {
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .trim();
+}
+
+/**
+ * Chave de agrupamento de produtos (melhoria simples, sem cadastro mestre):
+ * remove acentos e pontuação, junta número + unidade ("9 w" -> "9w") e ordena
+ * os termos, de modo que "Lâmpada LED 9W", "Lampada Led 9 W" e
+ * "Lâmpada 9W LED" caiam no mesmo grupo.
+ */
+export function chaveProduto(descricao: string) {
+  return normalize(descricao)
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/(\d)\s+(w|kg|g|ml|l|mm|cm|m|un|pol|v|a)\b/g, "$1$2")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .sort()
+    .join(" ");
+}
+
+/** "R$ 10,00 / UN" — deixa explícita a unidade de referência do preço. */
+export function precoUnidade(valor: number | null | undefined, unidade?: string | null) {
+  return `${brl(valor)} / ${unidade || "UN"}`;
+}
+
+/**
+ * Indicador de interesse do grupo: média ponderada pela quantidade de
+ * avaliações (média simples puxada para o valor neutro 3 quando há poucas
+ * avaliações), evitando que um único registro isolado defina o indicador.
+ * Regra: (soma + 3 * 2) / (n + 2), arredondada.
+ */
+export function interesseAgregado(valores: number[]) {
+  if (!valores.length) return 3;
+  const soma = valores.reduce((a, b) => a + b, 0);
+  return Math.round((soma + 3 * 2) / (valores.length + 2));
 }

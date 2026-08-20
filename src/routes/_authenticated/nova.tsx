@@ -175,41 +175,36 @@ function NovaCotacao() {
     }
     setSalvando(true);
     try {
-      const { data: cot, error } = await supabase
-        .from("cotacoes")
-        .insert({
-          fornecedor_id: fornecedorId,
-          status,
-          observacoes: observacoes.trim() || null,
-        })
-        .select()
-        .single();
-      if (error) throw error;
-
-      const payload = lista.map((d) => ({
-        cotacao_id: cot.id,
-        codigo: d.codigo.trim() || null,
+      // Gravação atômica: cotação + itens em uma única transação (RPC).
+      const itensPayload = lista.map((d) => ({
+        codigo: d.codigo.trim(),
         descricao: d.descricao.trim(),
         valor: parseValor(d.valor),
         quantidade: d.quantidade ? parseValor(d.quantidade) || 1 : 1,
         unidade: d.unidade,
-        marca: d.marca.trim() || null,
-        modelo: d.modelo.trim() || null,
-        garantia: d.garantia.trim() || null,
-        pagamento: d.pagamento.trim() || null,
-        qtd_minima: d.qtd_minima ? parseValor(d.qtd_minima) : null,
-        prazo_entrega: d.prazo_entrega.trim() || null,
-        frete: d.frete.trim() || null,
-        observacoes: d.observacoes.trim() || null,
+        marca: d.marca.trim(),
+        modelo: d.modelo.trim(),
+        garantia: d.garantia.trim(),
+        pagamento: d.pagamento.trim(),
+        qtd_minima: d.qtd_minima ? String(parseValor(d.qtd_minima)) : "",
+        prazo_entrega: d.prazo_entrega.trim(),
+        frete: d.frete.trim(),
+        observacoes: d.observacoes.trim(),
         interesse: d.interesse,
         oportunidade: d.oportunidade,
       }));
-      const { error: erroItens } = await supabase.from("itens_cotacao").insert(payload);
-      if (erroItens) throw erroItens;
+
+      const { data: novoId, error } = await supabase.rpc("criar_cotacao_completa", {
+        p_fornecedor_id: fornecedorId,
+        p_status: status,
+        p_observacoes: observacoes.trim() || null,
+        p_itens: itensPayload,
+      });
+      if (error) throw error;
 
       invalidar();
       toast.success("Cotação salva!");
-      navigate({ to: "/cotacoes/$id", params: { id: cot.id } });
+      navigate({ to: "/cotacoes/$id", params: { id: novoId as string } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao salvar cotação.");
     } finally {

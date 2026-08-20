@@ -200,6 +200,84 @@ export type Database = {
           },
         ]
       }
+      pedidos_compra: {
+        Row: {
+          canal: string | null
+          canal_confirmacao: string | null
+          confirmado_em: string | null
+          cotacao_id: string
+          created_at: string
+          entrega_prevista: string | null
+          entrega_realizada: string | null
+          enviado_em: string | null
+          fornecedor_confirmado: boolean
+          fornecedor_id: string
+          id: string
+          itens: Json
+          mensagem: string | null
+          observacao_confirmacao: string | null
+          observacao_entrega: string | null
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          canal?: string | null
+          canal_confirmacao?: string | null
+          confirmado_em?: string | null
+          cotacao_id: string
+          created_at?: string
+          entrega_prevista?: string | null
+          entrega_realizada?: string | null
+          enviado_em?: string | null
+          fornecedor_confirmado?: boolean
+          fornecedor_id: string
+          id?: string
+          itens?: Json
+          mensagem?: string | null
+          observacao_confirmacao?: string | null
+          observacao_entrega?: string | null
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          canal?: string | null
+          canal_confirmacao?: string | null
+          confirmado_em?: string | null
+          cotacao_id?: string
+          created_at?: string
+          entrega_prevista?: string | null
+          entrega_realizada?: string | null
+          enviado_em?: string | null
+          fornecedor_confirmado?: boolean
+          fornecedor_id?: string
+          id?: string
+          itens?: Json
+          mensagem?: string | null
+          observacao_confirmacao?: string | null
+          observacao_entrega?: string | null
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pedidos_compra_cotacao_id_fkey"
+            columns: ["cotacao_id"]
+            isOneToOne: false
+            referencedRelation: "cotacoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_compra_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       segmentos: {
         Row: {
           created_at: string
@@ -226,7 +304,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      criar_cotacao_completa: {
+        Args: {
+          p_fornecedor_id: string
+          p_itens: Json
+          p_observacoes: string
+          p_status: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
