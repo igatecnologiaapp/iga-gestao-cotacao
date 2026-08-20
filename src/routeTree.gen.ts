@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated/inicio'
 import { Route as AuthenticatedNovaRouteImport } from './routes/_authenticated/nova'
+import { Route as AuthenticatedCotacoesIndexRouteImport } from './routes/_authenticated/cotacoes.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -39,18 +40,26 @@ const AuthenticatedNovaRoute = AuthenticatedNovaRouteImport.update({
   path: '/nova',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCotacoesIndexRoute =
+  AuthenticatedCotacoesIndexRouteImport.update({
+    id: '/cotacoes/',
+    path: '/cotacoes/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/inicio': typeof AuthenticatedInicioRoute
   '/nova': typeof AuthenticatedNovaRoute
+  '/cotacoes/': typeof AuthenticatedCotacoesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/inicio': typeof AuthenticatedInicioRoute
   '/nova': typeof AuthenticatedNovaRoute
+  '/cotacoes': typeof AuthenticatedCotacoesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,12 +68,13 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/inicio': typeof AuthenticatedInicioRoute
   '/_authenticated/nova': typeof AuthenticatedNovaRoute
+  '/_authenticated/cotacoes/': typeof AuthenticatedCotacoesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/inicio' | '/nova'
+  fullPaths: '/' | '/auth' | '/inicio' | '/nova' | '/cotacoes/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/inicio' | '/nova'
+  to: '/' | '/auth' | '/inicio' | '/nova' | '/cotacoes'
   id:
     | '__root__'
     | '/'
@@ -72,6 +82,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/inicio'
     | '/_authenticated/nova'
+    | '/_authenticated/cotacoes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -117,17 +128,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNovaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/cotacoes/': {
+      id: '/_authenticated/cotacoes/'
+      path: '/cotacoes'
+      fullPath: '/cotacoes/'
+      preLoaderRoute: typeof AuthenticatedCotacoesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
   AuthenticatedNovaRoute: typeof AuthenticatedNovaRoute
+  AuthenticatedCotacoesIndexRoute: typeof AuthenticatedCotacoesIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedInicioRoute: AuthenticatedInicioRoute,
   AuthenticatedNovaRoute: AuthenticatedNovaRoute,
+  AuthenticatedCotacoesIndexRoute: AuthenticatedCotacoesIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
