@@ -12,9 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedCompararRouteImport } from './routes/_authenticated/comparar'
 import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated/inicio'
 import { Route as AuthenticatedNovaRouteImport } from './routes/_authenticated/nova'
 import { Route as AuthenticatedCotacoesIndexRouteImport } from './routes/_authenticated/cotacoes.index'
+import { Route as AuthenticatedCotacoesIdRouteImport } from './routes/_authenticated/cotacoes.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,6 +31,11 @@ const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedCompararRoute = AuthenticatedCompararRouteImport.update({
+  id: '/comparar',
+  path: '/comparar',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedInicioRoute = AuthenticatedInicioRouteImport.update({
   id: '/inicio',
@@ -46,19 +53,28 @@ const AuthenticatedCotacoesIndexRoute =
     path: '/cotacoes/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCotacoesIdRoute = AuthenticatedCotacoesIdRouteImport.update({
+  id: '/cotacoes/$id',
+  path: '/cotacoes/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/comparar': typeof AuthenticatedCompararRoute
   '/inicio': typeof AuthenticatedInicioRoute
   '/nova': typeof AuthenticatedNovaRoute
+  '/cotacoes/$id': typeof AuthenticatedCotacoesIdRoute
   '/cotacoes/': typeof AuthenticatedCotacoesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/comparar': typeof AuthenticatedCompararRoute
   '/inicio': typeof AuthenticatedInicioRoute
   '/nova': typeof AuthenticatedNovaRoute
+  '/cotacoes/$id': typeof AuthenticatedCotacoesIdRoute
   '/cotacoes': typeof AuthenticatedCotacoesIndexRoute
 }
 export interface FileRoutesById {
@@ -66,22 +82,40 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/comparar': typeof AuthenticatedCompararRoute
   '/_authenticated/inicio': typeof AuthenticatedInicioRoute
   '/_authenticated/nova': typeof AuthenticatedNovaRoute
+  '/_authenticated/cotacoes/$id': typeof AuthenticatedCotacoesIdRoute
   '/_authenticated/cotacoes/': typeof AuthenticatedCotacoesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/inicio' | '/nova' | '/cotacoes/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/comparar'
+    | '/inicio'
+    | '/nova'
+    | '/cotacoes/$id'
+    | '/cotacoes/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/inicio' | '/nova' | '/cotacoes'
+  to:
+    | '/'
+    | '/auth'
+    | '/comparar'
+    | '/inicio'
+    | '/nova'
+    | '/cotacoes/$id'
+    | '/cotacoes'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/comparar'
     | '/_authenticated/inicio'
     | '/_authenticated/nova'
+    | '/_authenticated/cotacoes/$id'
     | '/_authenticated/cotacoes/'
   fileRoutesById: FileRoutesById
 }
@@ -114,6 +148,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/comparar': {
+      id: '/_authenticated/comparar'
+      path: '/comparar'
+      fullPath: '/comparar'
+      preLoaderRoute: typeof AuthenticatedCompararRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/inicio': {
       id: '/_authenticated/inicio'
       path: '/inicio'
@@ -135,18 +176,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCotacoesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/cotacoes/$id': {
+      id: '/_authenticated/cotacoes/$id'
+      path: '/cotacoes/$id'
+      fullPath: '/cotacoes/$id'
+      preLoaderRoute: typeof AuthenticatedCotacoesIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCompararRoute: typeof AuthenticatedCompararRoute
   AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
   AuthenticatedNovaRoute: typeof AuthenticatedNovaRoute
+  AuthenticatedCotacoesIdRoute: typeof AuthenticatedCotacoesIdRoute
   AuthenticatedCotacoesIndexRoute: typeof AuthenticatedCotacoesIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCompararRoute: AuthenticatedCompararRoute,
   AuthenticatedInicioRoute: AuthenticatedInicioRoute,
   AuthenticatedNovaRoute: AuthenticatedNovaRoute,
+  AuthenticatedCotacoesIdRoute: AuthenticatedCotacoesIdRoute,
   AuthenticatedCotacoesIndexRoute: AuthenticatedCotacoesIndexRoute,
 }
 
