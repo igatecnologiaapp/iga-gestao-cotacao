@@ -37,7 +37,10 @@ function DetalheCotacao() {
 
   async function mudarStatus(status: string) {
     const { error } = await supabase.from("cotacoes").update({ status }).eq("id", id);
-    if (error) return toast.error("Não foi possível atualizar o status.");
+    if (error) {
+      toast.error("Não foi possível atualizar o status.");
+      return;
+    }
     invalidar();
     toast.success("Status atualizado.");
   }
@@ -47,13 +50,19 @@ function DetalheCotacao() {
       .from("itens_cotacao")
       .update({ oportunidade: !atual })
       .eq("id", itemId);
-    if (error) return toast.error("Não foi possível atualizar.");
+    if (error) {
+      toast.error("Não foi possível atualizar.");
+      return;
+    }
     invalidar();
   }
 
   async function excluir() {
     const { error } = await supabase.from("cotacoes").delete().eq("id", id);
-    if (error) return toast.error("Não foi possível excluir.");
+    if (error) {
+      toast.error("Não foi possível excluir.");
+      return;
+    }
     invalidar();
     toast.success("Cotação excluída.");
     navigate({ to: "/cotacoes" });
