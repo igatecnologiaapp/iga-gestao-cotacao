@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Check, ChevronDown, Plus, Search, Trash2, X } from "lucide-react";
+import { Check, Plus, Search, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   useCotacoes,
@@ -10,9 +10,9 @@ import {
   agruparProdutos,
   type Fornecedor,
 } from "@/lib/queries";
-import { STATUS_OPTIONS, UNIDADES, brl, normalize, parseValor } from "@/lib/cotacao";
+import { STATUS_OPTIONS, brl, normalize, parseValor } from "@/lib/cotacao";
 import { FornecedorForm } from "@/components/FornecedorForm";
-import { InteresseSelect } from "@/components/InteresseSelect";
+import { ItemFields, DRAFT_VAZIO, type Draft } from "@/components/ItemFields";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,48 +27,34 @@ import {
 
 export const Route = createFileRoute("/_authenticated/nova")({
   validateSearch: (search: Record<string, unknown>) => ({
-    fornecedor: typeof search["fornecedor"] === "string" ? (search["fornecedor"] as string) : undefined,
+    fornecedor:
+      typeof search["fornecedor"] === "string" ? (search["fornecedor"] as string) : undefined,
     copiar: typeof search["copiar"] === "string" ? (search["copiar"] as string) : undefined,
     item: typeof search["item"] === "string" ? (search["item"] as string) : undefined,
+  }),
+  head: () => ({
+    meta: [
+      { title: "Nova cotação — Cotação Rápida" },
+      { name: "description", content: "Registre fornecedor, produtos, preços e condições." },
+      { property: "og:title", content: "Nova cotação — Cotação Rápida" },
+      { property: "og:description", content: "Registre uma cotação em segundos." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
   }),
   component: NovaCotacao,
 });
 
-type Draft = {
-  codigo: string;
-  descricao: string;
-  valor: string;
-  quantidade: string;
-  unidade: string;
-  marca: string;
-  modelo: string;
-  garantia: string;
-  pagamento: string;
-  qtd_minima: string;
-  prazo_entrega: string;
-  frete: string;
-  observacoes: string;
-  interesse: number;
-  oportunidade: boolean;
-};
-
-const DRAFT_VAZIO: Draft = {
-  codigo: "",
-  descricao: "",
-  valor: "",
-  quantidade: "1",
-  unidade: "UN",
-  marca: "",
-  modelo: "",
-  garantia: "",
-  pagamento: "",
-  qtd_minima: "",
-  prazo_entrega: "",
-  frete: "",
-  observacoes: "",
-  interesse: 3,
-  oportunidade: false,
-};
+function Etapa({ numero, titulo }: { numero: number; titulo: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="brand-gradient flex size-6 items-center justify-center rounded-full text-xs font-bold text-primary-foreground">
+        {numero}
+      </span>
+      <h2 className="text-sm font-extrabold uppercase tracking-wide">{titulo}</h2>
+    </div>
+  );
+}
 
 function NovaCotacao() {
   const navigate = useNavigate();
@@ -89,10 +75,12 @@ function NovaCotacao() {
 
   const produtosConhecidos = useMemo(() => agruparProdutos(cotacoes), [cotacoes]);
 
-  // Pré-preenchimento: "cotar novamente" ou "cotar em outro fornecedor"
+  useEffect(() => {
+    if (search.fornecedor) setFornecedorId((atual) => atual || search.fornecedor!);
+  }, [search.fornecedor]);
+
   useEffect(() => {
     if (prefillFeito || !cotacoes.length) return;
-    if (search.fornecedor) setFornecedorId(search.fornecedor);
     if (search.copiar) {
       const origem = cotacoes.find((c) => c.id === search.copiar);
       if (origem) {
@@ -102,7 +90,6 @@ function NovaCotacao() {
             ...DRAFT_VAZIO,
             codigo: i.codigo ?? "",
             descricao: i.descricao,
-            valor: "",
             quantidade: String(i.quantidade ?? 1),
             unidade: i.unidade ?? "UN",
             marca: i.marca ?? "",
@@ -112,8 +99,7 @@ function NovaCotacao() {
         );
         setPrefillFeito(true);
       }
-    }
-    if (search.item) {
+    } else if (search.item) {
       const item = cotacoes.flatMap((c) => c.itens ?? []).find((i) => i.id === search.item);
       if (item) {
         setDraft({
@@ -129,7 +115,7 @@ function NovaCotacao() {
         setPrefillFeito(true);
       }
     }
-  }, [cotacoes, search, prefillFeito]);
+  }, [cotacoes, search.copiar, search.item, prefillFeito]);
 
   const fornecedorSelecionado = fornecedores.find((f) => f.id === fornecedorId) ?? null;
 
@@ -151,7 +137,8 @@ function NovaCotacao() {
     if (termo.length < 2) return [];
     return produtosConhecidos
       .filter((p) => normalize(p.descricao).includes(termo) && normalize(p.descricao) !== termo)
-      .slice(0, 5);
+      .slice(0, 5)
+      .map((p) => p.descricao);
   }, [draft.descricao, produtosConhecidos]);
 
   function adicionarItem() {
@@ -200,7 +187,7 @@ function NovaCotacao() {
         codigo: d.codigo.trim() || null,
         descricao: d.descricao.trim(),
         valor: parseValor(d.valor),
-        quantidade: d.quantidade ? parseValor(d.quantidade) : 1,
+        quantidade: d.quantidade ? parseValor(d.quantidade) || 1 : 1,
         unidade: d.unidade,
         marca: d.marca.trim() || null,
         modelo: d.modelo.trim() || null,
@@ -235,7 +222,6 @@ function NovaCotacao() {
     <div className="space-y-4 pb-8">
       <h1 className="text-2xl font-extrabold tracking-tight">Nova cotação</h1>
 
-      {/* Etapa 1 — fornecedor */}
       <section className="surface p-4">
         <Etapa numero={1} titulo="Fornecedor" />
         {fornecedorSelecionado ? (
@@ -290,24 +276,32 @@ function NovaCotacao() {
                 </button>
               ))}
               {!fornecedores.length && (
-                <p className="text-sm text-muted-foreground">Nenhum fornecedor cadastrado ainda.</p>
+                <p className="text-sm text-muted-foreground">
+                  Nenhum fornecedor cadastrado ainda.
+                </p>
               )}
             </div>
-            <Button variant="outline" className="h-12 w-full font-semibold" onClick={() => setNovoFornecedor(true)}>
+            <Button
+              variant="outline"
+              className="h-12 w-full font-semibold"
+              onClick={() => setNovoFornecedor(true)}
+            >
               <Plus className="size-4" /> Cadastrar novo fornecedor
             </Button>
           </div>
         )}
       </section>
 
-      {/* Etapa 2/3/4 — produtos */}
       <section className="surface p-4">
         <Etapa numero={2} titulo="Produtos e condições" />
 
         {itens.length > 0 && (
           <ul className="mt-3 space-y-2">
             {itens.map((i, idx) => (
-              <li key={idx} className="flex items-center justify-between rounded-xl bg-secondary px-3 py-2.5">
+              <li
+                key={`${i.descricao}-${idx}`}
+                className="flex items-center justify-between rounded-xl bg-secondary px-3 py-2.5"
+              >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{i.descricao}</p>
                   <p className="text-xs text-muted-foreground">
@@ -328,18 +322,13 @@ function NovaCotacao() {
         )}
 
         <div className="mt-3">
-          <ItemFields
-            draft={draft}
-            setDraft={setDraft}
-            sugestoes={sugestoesProduto.map((p) => p.descricao)}
-          />
+          <ItemFields draft={draft} setDraft={setDraft} sugestoes={sugestoesProduto} />
           <Button variant="outline" className="mt-3 h-12 w-full font-bold" onClick={adicionarItem}>
             <Plus className="size-4" /> Adicionar produto
           </Button>
         </div>
       </section>
 
-      {/* Etapa 5 — salvar */}
       <section className="surface space-y-3 p-4">
         <Etapa numero={3} titulo="Status e observações" />
         <div className="space-y-1.5">
@@ -378,198 +367,9 @@ function NovaCotacao() {
           disabled={salvando}
           className="h-14 w-full rounded-xl text-base font-extrabold shadow-[var(--shadow-float)]"
         >
-          Salvar cotação {total > 0 && `· ${brl(total)}`}
+          Salvar cotação {total > 0 ? `· ${brl(total)}` : ""}
         </Button>
       </div>
     </div>
   );
 }
-
-function Etapa({ numero, titulo }: { numero: number; titulo: string }) {
-  return (
-    <div className="flex items-center gap-2">
-      <span className="brand-gradient flex size-6 items-center justify-center rounded-full text-xs font-bold text-primary-foreground">
-        {numero}
-      </span>
-      <h2 className="text-sm font-extrabold uppercase tracking-wide">{titulo}</h2>
-    </div>
-  );
-}
-
-export function ItemFields({
-  draft,
-  setDraft,
-  sugestoes = [],
-}: {
-  draft: Draft;
-  setDraft: React.Dispatch<React.SetStateAction<Draft>>;
-  sugestoes?: string[];
-}) {
-  const [avancado, setAvancado] = useState(false);
-  const set = (campo: keyof Draft) => (valor: string | number | boolean) =>
-    setDraft((d) => ({ ...d, [campo]: valor }));
-
-  return (
-    <div className="space-y-3">
-      <div className="space-y-1.5">
-        <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-          Descrição do produto *
-        </Label>
-        <Input
-          className="h-12"
-          placeholder="Ex.: Lâmpada LED 9W"
-          value={draft.descricao}
-          onChange={(e) => set("descricao")(e.target.value)}
-          maxLength={160}
-        />
-        {sugestoes.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 pt-1">
-            {sugestoes.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => set("descricao")(s)}
-                className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold"
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5">
-          <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-            Valor *
-          </Label>
-          <Input
-            className="h-12"
-            inputMode="decimal"
-            placeholder="0,00"
-            value={draft.valor}
-            onChange={(e) => set("valor")(e.target.value)}
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-            Quantidade
-          </Label>
-          <Input
-            className="h-12"
-            inputMode="decimal"
-            value={draft.quantidade}
-            onChange={(e) => set("quantidade")(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5">
-          <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-            Unidade
-          </Label>
-          <Select value={draft.unidade} onValueChange={(v) => set("unidade")(v)}>
-            <SelectTrigger className="h-12 w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {UNIDADES.map((u) => (
-                <SelectItem key={u} value={u}>
-                  {u}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-            Código
-          </Label>
-          <Input
-            className="h-12"
-            value={draft.codigo}
-            onChange={(e) => set("codigo")(e.target.value)}
-            maxLength={60}
-          />
-        </div>
-      </div>
-
-      <div className="space-y-1.5">
-        <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-          Interesse de compra
-        </Label>
-        <InteresseSelect value={draft.interesse} onChange={(v) => set("interesse")(v)} />
-      </div>
-
-      <label className="flex items-center gap-2 rounded-lg bg-accent/15 px-3 py-2.5 text-sm font-semibold">
-        <input
-          type="checkbox"
-          className="size-5 accent-[var(--accent)]"
-          checked={draft.oportunidade}
-          onChange={(e) => set("oportunidade")(e.target.checked)}
-        />
-        Marcar como oportunidade
-      </label>
-
-      <button
-        type="button"
-        onClick={() => setAvancado((v) => !v)}
-        className="flex w-full items-center justify-between rounded-lg bg-secondary px-3 py-2.5 text-sm font-semibold"
-      >
-        Condições comerciais
-        <ChevronDown className={avancado ? "size-4 rotate-180" : "size-4"} />
-      </button>
-
-      {avancado && (
-        <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
-            <Campo label="Marca">
-              <Input className="h-12" value={draft.marca} onChange={(e) => set("marca")(e.target.value)} maxLength={80} />
-            </Campo>
-            <Campo label="Modelo">
-              <Input className="h-12" value={draft.modelo} onChange={(e) => set("modelo")(e.target.value)} maxLength={80} />
-            </Campo>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Campo label="Pagamento">
-              <Input className="h-12" placeholder="PIX, 28 dias..." value={draft.pagamento} onChange={(e) => set("pagamento")(e.target.value)} maxLength={80} />
-            </Campo>
-            <Campo label="Compra mínima">
-              <Input className="h-12" inputMode="decimal" value={draft.qtd_minima} onChange={(e) => set("qtd_minima")(e.target.value)} />
-            </Campo>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Campo label="Prazo de entrega">
-              <Input className="h-12" value={draft.prazo_entrega} onChange={(e) => set("prazo_entrega")(e.target.value)} maxLength={80} />
-            </Campo>
-            <Campo label="Frete">
-              <Input className="h-12" value={draft.frete} onChange={(e) => set("frete")(e.target.value)} maxLength={80} />
-            </Campo>
-          </div>
-          <Campo label="Garantia">
-            <Input className="h-12" value={draft.garantia} onChange={(e) => set("garantia")(e.target.value)} maxLength={80} />
-          </Campo>
-          <Campo label="Observações do produto">
-            <Textarea value={draft.observacoes} onChange={(e) => set("observacoes")(e.target.value)} maxLength={1000} />
-          </Campo>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function Campo({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-1.5">
-      <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </Label>
-      {children}
-    </div>
-  );
-}
-
-export type { Draft };
-export const DraftVazio = DRAFT_VAZIO;
-export const IconX = X;
