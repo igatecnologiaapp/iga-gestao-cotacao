@@ -48,6 +48,7 @@ export function useInvalidateAll() {
     qc.invalidateQueries({ queryKey: ["cotacoes"] });
     qc.invalidateQueries({ queryKey: ["fornecedores"] });
     qc.invalidateQueries({ queryKey: ["segmentos"] });
+    qc.invalidateQueries({ queryKey: ["pedidos"] });
   };
 }
 
@@ -131,5 +132,29 @@ export function totalCotacao(cot: CotacaoFull) {
 export function interessePredominante(cot: CotacaoFull) {
   const itens = cot.itens ?? [];
   if (!itens.length) return 3;
-  return Math.max(...itens.map((i) => i.interesse));
+  return interesseAgregado(itens.map((i) => i.interesse));
+}
+
+export type Pedido = Database["public"]["Tables"]["pedidos_compra"]["Row"];
+export type PedidoItem = {
+  id: string;
+  descricao: string;
+  quantidade: number;
+  unidade: string;
+  valor: number;
+  subtotal: number;
+  condicoes: string;
+};
+
+export async function fetchPedidos(): Promise<Pedido[]> {
+  const { data, error } = await supabase
+    .from("pedidos_compra")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export function usePedidos() {
+  return useQuery({ queryKey: ["pedidos"], queryFn: fetchPedidos });
 }
