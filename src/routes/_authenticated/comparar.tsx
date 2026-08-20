@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/comparar")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    q: typeof search["q"] === "string" ? (search["q"] as string) : undefined,
+  validateSearch: (search: Record<string, unknown>): { q?: string } => ({
+    ...(typeof search["q"] === "string" ? { q: search["q"] as string } : {}),
   }),
+
   head: () => ({
     meta: [
       { title: "Comparar preços — Cotação Rápida" },

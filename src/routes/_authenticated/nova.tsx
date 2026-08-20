@@ -26,12 +26,16 @@ import {
 } from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/nova")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    fornecedor:
-      typeof search["fornecedor"] === "string" ? (search["fornecedor"] as string) : undefined,
-    copiar: typeof search["copiar"] === "string" ? (search["copiar"] as string) : undefined,
-    item: typeof search["item"] === "string" ? (search["item"] as string) : undefined,
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { fornecedor?: string; copiar?: string; item?: string } => ({
+    ...(typeof search["fornecedor"] === "string"
+      ? { fornecedor: search["fornecedor"] as string }
+      : {}),
+    ...(typeof search["copiar"] === "string" ? { copiar: search["copiar"] as string } : {}),
+    ...(typeof search["item"] === "string" ? { item: search["item"] as string } : {}),
   }),
+
   head: () => ({
     meta: [
       { title: "Nova cotação — Cotação Rápida" },
