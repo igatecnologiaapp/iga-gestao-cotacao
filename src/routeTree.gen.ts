@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedBuscaRouteImport } from './routes/_authenticated/busca'
 import { Route as AuthenticatedCompararRouteImport } from './routes/_authenticated/comparar'
+import { Route as AuthenticatedFornecedoresRouteImport } from './routes/_authenticated/fornecedores'
 import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated/inicio'
 import { Route as AuthenticatedNovaRouteImport } from './routes/_authenticated/nova'
 import { Route as AuthenticatedOportunidadesRouteImport } from './routes/_authenticated/oportunidades'
@@ -34,11 +36,22 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedBuscaRoute = AuthenticatedBuscaRouteImport.update({
+  id: '/busca',
+  path: '/busca',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCompararRoute = AuthenticatedCompararRouteImport.update({
   id: '/comparar',
   path: '/comparar',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedFornecedoresRoute =
+  AuthenticatedFornecedoresRouteImport.update({
+    id: '/fornecedores',
+    path: '/fornecedores',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedInicioRoute = AuthenticatedInicioRouteImport.update({
   id: '/inicio',
   path: '/inicio',
@@ -75,7 +88,9 @@ const AuthenticatedCotacoesIdRoute = AuthenticatedCotacoesIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/busca': typeof AuthenticatedBuscaRoute
   '/comparar': typeof AuthenticatedCompararRoute
+  '/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/inicio': typeof AuthenticatedInicioRoute
   '/nova': typeof AuthenticatedNovaRoute
   '/oportunidades': typeof AuthenticatedOportunidadesRoute
@@ -86,7 +101,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/busca': typeof AuthenticatedBuscaRoute
   '/comparar': typeof AuthenticatedCompararRoute
+  '/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/inicio': typeof AuthenticatedInicioRoute
   '/nova': typeof AuthenticatedNovaRoute
   '/oportunidades': typeof AuthenticatedOportunidadesRoute
@@ -99,7 +116,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/busca': typeof AuthenticatedBuscaRoute
   '/_authenticated/comparar': typeof AuthenticatedCompararRoute
+  '/_authenticated/fornecedores': typeof AuthenticatedFornecedoresRoute
   '/_authenticated/inicio': typeof AuthenticatedInicioRoute
   '/_authenticated/nova': typeof AuthenticatedNovaRoute
   '/_authenticated/oportunidades': typeof AuthenticatedOportunidadesRoute
@@ -112,7 +131,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/busca'
     | '/comparar'
+    | '/fornecedores'
     | '/inicio'
     | '/nova'
     | '/oportunidades'
@@ -123,7 +144,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/busca'
     | '/comparar'
+    | '/fornecedores'
     | '/inicio'
     | '/nova'
     | '/oportunidades'
@@ -135,7 +158,9 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/busca'
     | '/_authenticated/comparar'
+    | '/_authenticated/fornecedores'
     | '/_authenticated/inicio'
     | '/_authenticated/nova'
     | '/_authenticated/oportunidades'
@@ -173,11 +198,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/busca': {
+      id: '/_authenticated/busca'
+      path: '/busca'
+      fullPath: '/busca'
+      preLoaderRoute: typeof AuthenticatedBuscaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/comparar': {
       id: '/_authenticated/comparar'
       path: '/comparar'
       fullPath: '/comparar'
       preLoaderRoute: typeof AuthenticatedCompararRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/fornecedores': {
+      id: '/_authenticated/fornecedores'
+      path: '/fornecedores'
+      fullPath: '/fornecedores'
+      preLoaderRoute: typeof AuthenticatedFornecedoresRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/inicio': {
@@ -226,7 +265,9 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedBuscaRoute: typeof AuthenticatedBuscaRoute
   AuthenticatedCompararRoute: typeof AuthenticatedCompararRoute
+  AuthenticatedFornecedoresRoute: typeof AuthenticatedFornecedoresRoute
   AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
   AuthenticatedNovaRoute: typeof AuthenticatedNovaRoute
   AuthenticatedOportunidadesRoute: typeof AuthenticatedOportunidadesRoute
@@ -236,7 +277,9 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedBuscaRoute: AuthenticatedBuscaRoute,
   AuthenticatedCompararRoute: AuthenticatedCompararRoute,
+  AuthenticatedFornecedoresRoute: AuthenticatedFornecedoresRoute,
   AuthenticatedInicioRoute: AuthenticatedInicioRoute,
   AuthenticatedNovaRoute: AuthenticatedNovaRoute,
   AuthenticatedOportunidadesRoute: AuthenticatedOportunidadesRoute,
