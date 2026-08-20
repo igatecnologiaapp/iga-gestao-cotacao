@@ -183,8 +183,13 @@ function DetalheCotacao() {
                   {item.marca ? ` · ${item.marca}` : ""}
                 </p>
               </div>
-              <span className="shrink-0 text-lg font-extrabold text-primary">
-                {brl(Number(item.valor))}
+              <span className="shrink-0 text-right">
+                <span className="block text-lg font-extrabold text-primary">
+                  {precoUnidade(Number(item.valor), item.unidade)}
+                </span>
+                <span className="block text-xs text-muted-foreground">
+                  subtotal {brl(Number(item.valor) * Number(item.quantidade ?? 1))}
+                </span>
               </span>
             </div>
 
@@ -220,9 +225,45 @@ function DetalheCotacao() {
         ))}
       </section>
 
-      <Button variant="ghost" className="h-11 w-full text-destructive" onClick={excluir}>
-        <Trash2 className="size-4" /> Excluir cotação
-      </Button>
+      <PedidoCompra cot={cot} />
+
+      <div className="space-y-2 pt-2">
+        <Button variant="outline" className="h-12 w-full font-bold" onClick={arquivar}>
+          <Archive className="size-4" /> Arquivar cotação
+        </Button>
+        <p className="text-center text-xs text-muted-foreground">
+          Arquivar preserva o histórico e mantém a cotação disponível nas análises.
+        </p>
+
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button
+              type="button"
+              className="mt-4 w-full py-2 text-center text-xs font-semibold text-muted-foreground underline"
+            >
+              <Trash2 className="mr-1 inline size-3" /> Excluir definitivamente
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Excluir esta cotação?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Esta operação é irreversível: a cotação, seus produtos e o histórico de preços
+                correspondente serão perdidos. Prefira arquivar para manter o histórico.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="h-11">Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                className="h-11 bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={excluir}
+              >
+                Excluir mesmo assim
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </div>
   );
 }
