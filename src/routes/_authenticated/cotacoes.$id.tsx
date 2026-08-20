@@ -1,11 +1,30 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { ArrowLeft, Copy, MessageCircle, Repeat, Star, Trash2 } from "lucide-react";
+import { Archive, ArrowLeft, Copy, MessageCircle, Repeat, Star, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCotacoes, useInvalidateAll, totalCotacao } from "@/lib/queries";
-import { STATUS_OPTIONS, brl, dataHora, interesseLabel, whatsappLink } from "@/lib/cotacao";
+import {
+  STATUS_OPTIONS,
+  brl,
+  dataHora,
+  interesseLabel,
+  precoUnidade,
+  whatsappLink,
+} from "@/lib/cotacao";
+import { PedidoCompra } from "@/components/PedidoCompra";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
   Select,
   SelectContent,
@@ -55,6 +74,20 @@ function DetalheCotacao() {
       return;
     }
     invalidar();
+  }
+
+  async function arquivar() {
+    const { error } = await supabase
+      .from("cotacoes")
+      .update({ status: "arquivada" })
+      .eq("id", id);
+    if (error) {
+      toast.error("Não foi possível arquivar.");
+      return;
+    }
+    invalidar();
+    toast.success("Cotação arquivada — o histórico foi preservado.");
+    navigate({ to: "/cotacoes" });
   }
 
   async function excluir() {
