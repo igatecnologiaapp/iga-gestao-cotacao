@@ -14,7 +14,213 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cotacoes: {
+        Row: {
+          created_at: string
+          fornecedor_id: string
+          id: string
+          observacoes: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fornecedor_id: string
+          id?: string
+          observacoes?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          fornecedor_id?: string
+          id?: string
+          observacoes?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cotacoes_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fornecedores: {
+        Row: {
+          bairro: string
+          cidade: string | null
+          contato: string
+          created_at: string
+          email: string | null
+          endereco: string | null
+          id: string
+          nome: string
+          observacoes: string | null
+          segmento_id: string | null
+          segmento_nome: string | null
+          site: string | null
+          telefone: string | null
+          uf: string
+          updated_at: string
+          user_id: string
+          vendedor: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          bairro: string
+          cidade?: string | null
+          contato: string
+          created_at?: string
+          email?: string | null
+          endereco?: string | null
+          id?: string
+          nome: string
+          observacoes?: string | null
+          segmento_id?: string | null
+          segmento_nome?: string | null
+          site?: string | null
+          telefone?: string | null
+          uf: string
+          updated_at?: string
+          user_id?: string
+          vendedor?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          bairro?: string
+          cidade?: string | null
+          contato?: string
+          created_at?: string
+          email?: string | null
+          endereco?: string | null
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          segmento_id?: string | null
+          segmento_nome?: string | null
+          site?: string | null
+          telefone?: string | null
+          uf?: string
+          updated_at?: string
+          user_id?: string
+          vendedor?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fornecedores_segmento_id_fkey"
+            columns: ["segmento_id"]
+            isOneToOne: false
+            referencedRelation: "segmentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      itens_cotacao: {
+        Row: {
+          codigo: string | null
+          cotacao_id: string
+          created_at: string
+          descricao: string
+          frete: string | null
+          garantia: string | null
+          id: string
+          interesse: number
+          marca: string | null
+          modelo: string | null
+          observacoes: string | null
+          oportunidade: boolean
+          pagamento: string | null
+          prazo_entrega: string | null
+          qtd_minima: number | null
+          quantidade: number | null
+          unidade: string | null
+          updated_at: string
+          user_id: string
+          valor: number
+        }
+        Insert: {
+          codigo?: string | null
+          cotacao_id: string
+          created_at?: string
+          descricao: string
+          frete?: string | null
+          garantia?: string | null
+          id?: string
+          interesse?: number
+          marca?: string | null
+          modelo?: string | null
+          observacoes?: string | null
+          oportunidade?: boolean
+          pagamento?: string | null
+          prazo_entrega?: string | null
+          qtd_minima?: number | null
+          quantidade?: number | null
+          unidade?: string | null
+          updated_at?: string
+          user_id?: string
+          valor: number
+        }
+        Update: {
+          codigo?: string | null
+          cotacao_id?: string
+          created_at?: string
+          descricao?: string
+          frete?: string | null
+          garantia?: string | null
+          id?: string
+          interesse?: number
+          marca?: string | null
+          modelo?: string | null
+          observacoes?: string | null
+          oportunidade?: boolean
+          pagamento?: string | null
+          prazo_entrega?: string | null
+          qtd_minima?: number | null
+          quantidade?: number | null
+          unidade?: string | null
+          updated_at?: string
+          user_id?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "itens_cotacao_cotacao_id_fkey"
+            columns: ["cotacao_id"]
+            isOneToOne: false
+            referencedRelation: "cotacoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      segmentos: {
+        Row: {
+          created_at: string
+          id: string
+          nome: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nome: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nome?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
