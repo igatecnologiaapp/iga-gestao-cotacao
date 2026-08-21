@@ -86,12 +86,18 @@ function AuthPage() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
       <div className="w-full max-w-sm">
         <div className="mb-6 text-center">
-          <span className="brand-gradient mx-auto flex size-14 items-center justify-center rounded-2xl text-lg font-extrabold text-primary-foreground">
-            CR
+          {/* Espaço reservado para a logomarca da IGA Tecnologia (substituir por <img src={logo} .../>). */}
+          <span
+            aria-label="IGA Tecnologia"
+            className="brand-gradient mx-auto flex size-16 items-center justify-center rounded-2xl text-xl font-extrabold tracking-tight text-primary-foreground"
+          >
+            IGA
           </span>
-          <h1 className="mt-4 text-2xl font-extrabold">Cotação Rápida</h1>
+          <h1 className="mt-4 text-2xl font-extrabold">Entre para Cotar</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {modo === "entrar" ? "Entre para continuar cotando." : "Crie sua conta em segundos."}
+            {modo === "entrar"
+              ? "IGA Tecnologia — Cotação Rápida"
+              : "Crie sua conta em segundos e comece a cotar."}
           </p>
         </div>
 
