@@ -88,7 +88,9 @@ function Comparar() {
                       </p>
                     </div>
                     <div className="shrink-0 text-right">
-                      <p className="text-lg font-extrabold">{brl(valor)}</p>
+                      <p className="text-lg font-extrabold">
+                        {precoUnidade(valor, item.unidade)}
+                      </p>
                       {menor && (
                         <span className="text-[11px] font-extrabold uppercase text-success">
                           menor preço
