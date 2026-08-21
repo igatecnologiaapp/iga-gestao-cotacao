@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { CheckCircle2, Mail, MessageCircle, ShoppingCart, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import {
   useInvalidateAll,
   usePedidos,
@@ -252,7 +253,10 @@ function PedidoCard({ pedido }: { pedido: Pedido }) {
   const [obsEntrega, setObsEntrega] = useState(pedido.observacao_entrega ?? "");
   const [salvando, setSalvando] = useState(false);
 
-  async function atualizar(campos: Record<string, unknown>, msg: string) {
+  async function atualizar(
+    campos: Database["public"]["Tables"]["pedidos_compra"]["Update"],
+    msg: string,
+  ) {
     setSalvando(true);
     const { error } = await supabase.from("pedidos_compra").update(campos).eq("id", pedido.id);
     setSalvando(false);

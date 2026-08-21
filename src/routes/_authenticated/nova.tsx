@@ -197,7 +197,7 @@ function NovaCotacao() {
       const { data: novoId, error } = await supabase.rpc("criar_cotacao_completa", {
         p_fornecedor_id: fornecedorId,
         p_status: status,
-        p_observacoes: observacoes.trim() || null,
+        p_observacoes: observacoes.trim(),
         p_itens: itensPayload,
       });
       if (error) throw error;

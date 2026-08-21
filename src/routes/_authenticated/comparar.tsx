@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Search } from "lucide-react";
-import { useCotacoes, agruparProdutos } from "@/lib/queries";
-import { brl, dataCurta, normalize } from "@/lib/cotacao";
+import { useCotacoes, agruparProdutos, historicoProduto } from "@/lib/queries";
+import { brl, dataCurta, dataHora, normalize, precoUnidade } from "@/lib/cotacao";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -56,6 +56,14 @@ function Comparar() {
           <Resumo rotulo="Maior" valor={brl(grupo.maior)} destaque="destructive" />
         </div>
 
+        {grupo.unidades.length > 1 && (
+          <p className="rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-xs font-semibold text-destructive">
+            Atenção: este produto foi cotado em unidades diferentes ({grupo.unidades.join(", ")}).
+            Confira a unidade antes de comparar os preços.
+          </p>
+        )}
+
+
         <ul className="space-y-2">
           {grupo.registros.map(({ item, cotacao }) => {
             const valor = Number(item.valor);
@@ -80,7 +88,9 @@ function Comparar() {
                       </p>
                     </div>
                     <div className="shrink-0 text-right">
-                      <p className="text-lg font-extrabold">{brl(valor)}</p>
+                      <p className="text-lg font-extrabold">
+                        {precoUnidade(valor, item.unidade)}
+                      </p>
                       {menor && (
                         <span className="text-[11px] font-extrabold uppercase text-success">
                           menor preço
@@ -108,6 +118,25 @@ function Comparar() {
         <p className="text-xs text-muted-foreground">
           O menor preço nem sempre é a melhor condição: confira compra mínima, pagamento e frete.
         </p>
+
+        <section className="space-y-2">
+          <h2 className="text-sm font-extrabold uppercase tracking-wide text-muted-foreground">
+            Histórico de preços
+          </h2>
+          <ul className="surface divide-y divide-border">
+            {historicoProduto(grupo).map(({ item, cotacao }) => (
+              <li key={`h-${item.id}`} className="flex items-center justify-between gap-3 p-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold">{cotacao.fornecedor?.nome}</p>
+                  <p className="text-xs text-muted-foreground">{dataHora(cotacao.created_at)}</p>
+                </div>
+                <span className="shrink-0 text-sm font-extrabold">
+                  {precoUnidade(Number(item.valor), item.unidade)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
       </div>
     );
   }
