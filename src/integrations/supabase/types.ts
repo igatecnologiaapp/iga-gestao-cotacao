@@ -125,6 +125,7 @@ export type Database = {
       }
       itens_cotacao: {
         Row: {
+          arquivado: boolean
           codigo: string | null
           cotacao_id: string
           created_at: string
@@ -147,6 +148,7 @@ export type Database = {
           valor: number
         }
         Insert: {
+          arquivado?: boolean
           codigo?: string | null
           cotacao_id: string
           created_at?: string
@@ -169,6 +171,7 @@ export type Database = {
           valor: number
         }
         Update: {
+          arquivado?: boolean
           codigo?: string | null
           cotacao_id?: string
           created_at?: string

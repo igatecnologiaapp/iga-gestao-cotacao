@@ -16,6 +16,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { LogoIga } from "@/components/LogoIga";
 
 const NAV = [
   { to: "/inicio", label: "Início", icon: Home },
@@ -50,9 +51,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-30 border-b border-border/70 bg-background/90 backdrop-blur">
         <div className="mx-auto flex max-w-4xl items-center gap-2 px-4 py-3">
           <Link to="/inicio" className="flex shrink-0 items-center gap-2">
-            <span className="brand-gradient flex size-9 items-center justify-center rounded-xl text-sm font-extrabold text-primary-foreground">
-              CR
-            </span>
+            <LogoIga className="size-9 rounded-xl" />
             <span className="hidden text-base font-extrabold tracking-tight sm:block">
               Cotação Rápida
             </span>
