@@ -16,6 +16,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { LogoIga } from "@/components/LogoIga";
 
 const NAV = [
   { to: "/inicio", label: "Início", icon: Home },
