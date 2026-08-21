@@ -118,6 +118,25 @@ function Comparar() {
         <p className="text-xs text-muted-foreground">
           O menor preço nem sempre é a melhor condição: confira compra mínima, pagamento e frete.
         </p>
+
+        <section className="space-y-2">
+          <h2 className="text-sm font-extrabold uppercase tracking-wide text-muted-foreground">
+            Histórico de preços
+          </h2>
+          <ul className="surface divide-y divide-border">
+            {historicoProduto(grupo).map(({ item, cotacao }) => (
+              <li key={`h-${item.id}`} className="flex items-center justify-between gap-3 p-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold">{cotacao.fornecedor?.nome}</p>
+                  <p className="text-xs text-muted-foreground">{dataHora(cotacao.created_at)}</p>
+                </div>
+                <span className="shrink-0 text-sm font-extrabold">
+                  {precoUnidade(Number(item.valor), item.unidade)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
       </div>
     );
   }
