@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Search } from "lucide-react";
-import { useCotacoes, agruparProdutos } from "@/lib/queries";
-import { brl, dataCurta, normalize } from "@/lib/cotacao";
+import { useCotacoes, agruparProdutos, historicoProduto } from "@/lib/queries";
+import { brl, dataCurta, dataHora, normalize, precoUnidade } from "@/lib/cotacao";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -55,6 +55,14 @@ function Comparar() {
           <Resumo rotulo="Médio" valor={brl(grupo.medio)} />
           <Resumo rotulo="Maior" valor={brl(grupo.maior)} destaque="destructive" />
         </div>
+
+        {grupo.unidades.length > 1 && (
+          <p className="rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-xs font-semibold text-destructive">
+            Atenção: este produto foi cotado em unidades diferentes ({grupo.unidades.join(", ")}).
+            Confira a unidade antes de comparar os preços.
+          </p>
+        )}
+
 
         <ul className="space-y-2">
           {grupo.registros.map(({ item, cotacao }) => {
