@@ -69,10 +69,15 @@ export type ProdutoResumo = {
   interesseRecente: number;
   /** Unidades distintas encontradas — comparação só é segura com uma unidade. */
   unidades: string[];
+  /** Produto inativado: todos os registros marcados como arquivados. */
+  arquivado: boolean;
 };
 
 /** Agrupa todos os itens cotados por chave normalizada da descrição. */
-export function agruparProdutos(cotacoes: CotacaoFull[]): ProdutoResumo[] {
+export function agruparProdutos(
+  cotacoes: CotacaoFull[],
+  opcoes: { incluirArquivados?: boolean } = {},
+): ProdutoResumo[] {
   const mapa = new Map<string, ProdutoResumo>();
   for (const cot of cotacoes) {
     for (const item of cot.itens ?? []) {
@@ -90,6 +95,7 @@ export function agruparProdutos(cotacoes: CotacaoFull[]): ProdutoResumo[] {
           interesse: 0,
           interesseRecente: 3,
           unidades: [],
+          arquivado: false,
         };
         mapa.set(chave, grupo);
       }
@@ -105,6 +111,7 @@ export function agruparProdutos(cotacoes: CotacaoFull[]): ProdutoResumo[] {
     g.fornecedores = new Set(g.registros.map((r) => r.cotacao.fornecedor_id)).size;
     g.interesse = interesseAgregado(g.registros.map((r) => r.item.interesse));
     g.unidades = [...new Set(g.registros.map((r) => r.item.unidade ?? "UN"))];
+    g.arquivado = g.registros.every((r) => r.item.arquivado === true);
     const cronologico = [...g.registros].sort(
       (a, b) => +new Date(a.cotacao.created_at) - +new Date(b.cotacao.created_at),
     );
@@ -112,8 +119,9 @@ export function agruparProdutos(cotacoes: CotacaoFull[]): ProdutoResumo[] {
     g.registros.sort((a, b) => Number(a.item.valor) - Number(b.item.valor));
   }
   lista.sort((a, b) => b.registros.length - a.registros.length);
-  return lista;
+  return opcoes.incluirArquivados ? lista : lista.filter((g) => !g.arquivado);
 }
+
 
 /** Histórico cronológico (mais antigo → mais recente) de um grupo de produto. */
 export function historicoProduto(grupo: ProdutoResumo) {
