@@ -21,7 +21,9 @@ const imagemSchema = z
 
 export type LeituraErro = { erro: string; retryable: boolean };
 
-async function chamarVisao(imagem: string, prompt: string): Promise<unknown> {
+type Json = Record<string, unknown>;
+
+async function chamarVisao(imagem: string, prompt: string): Promise<Json> {
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) throw new Error("Serviço de leitura não configurado.");
 
@@ -67,13 +69,13 @@ async function chamarVisao(imagem: string, prompt: string): Promise<unknown> {
   const conteudo = json.choices?.[0]?.message?.content ?? "";
   const bruto = conteudo.trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
   try {
-    return JSON.parse(bruto);
+    return JSON.parse(bruto) as Json;
   } catch {
     const inicio = bruto.indexOf("{");
     const fim = bruto.lastIndexOf("}");
     if (inicio >= 0 && fim > inicio) {
       try {
-        return JSON.parse(bruto.slice(inicio, fim + 1));
+        return JSON.parse(bruto.slice(inicio, fim + 1)) as Json;
       } catch {
         /* ignora */
       }
