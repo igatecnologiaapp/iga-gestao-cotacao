@@ -240,14 +240,23 @@ export function LerEtiqueta({ onAplicar }: { onAplicar: (dados: Partial<Draft>) 
                     </div>
                     <div className="space-y-1.5">
                       <Label className="flex items-center text-xs font-bold uppercase text-muted-foreground">
-                        Unidade {marca("unidade")}
+                        Unidade *{" "}
+                        {revisao.unidade ? (
+                          marca("unidade")
+                        ) : (
+                          <span className="ml-2 rounded-full bg-warning/15 px-2 py-0.5 text-[10px] font-bold uppercase text-warning-foreground">
+                            Selecionar
+                          </span>
+                        )}
                       </Label>
                       <Select
                         value={revisao.unidade}
                         onValueChange={(v) => setRevisao({ ...revisao, unidade: v })}
                       >
-                        <SelectTrigger className="h-12 w-full">
-                          <SelectValue />
+                        <SelectTrigger
+                          className={`h-12 w-full ${revisao.unidade ? "" : "border-warning"}`}
+                        >
+                          <SelectValue placeholder="Selecionar unidade" />
                         </SelectTrigger>
                         <SelectContent>
                           {UNIDADES.map((u) => (
@@ -257,7 +266,13 @@ export function LerEtiqueta({ onAplicar }: { onAplicar: (dados: Partial<Draft>) 
                           ))}
                         </SelectContent>
                       </Select>
+                      {!revisao.unidade && (
+                        <p className="text-[11px] text-muted-foreground">
+                          Não identificada na etiqueta. Escolha antes de inserir.
+                        </p>
+                      )}
                     </div>
+
                     <div className="space-y-1.5">
                       <Label className="flex items-center text-xs font-bold uppercase text-muted-foreground">
                         Marca {marca("marca")}
