@@ -10,7 +10,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
  * retorna. A rota exige usuário autenticado.
  */
 
-const MODELO = "google/gemini-3-flash";
+const MODELO = "openai/gpt-5.6-sol";
 const GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
 /** Data URL de imagem, limitada a ~4 MB em base64. */
@@ -21,7 +21,8 @@ const imagemSchema = z
 
 export type LeituraErro = { erro: string; retryable: boolean };
 
-async function chamarVisao(imagem: string, prompt: string): Promise<unknown> {
+/** Retorna o JSON interpretado já validado, serializado como texto. */
+async function chamarVisao(imagem: string, prompt: string): Promise<{ dados: string }> {
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) throw new Error("Serviço de leitura não configurado.");
 
@@ -67,13 +68,13 @@ async function chamarVisao(imagem: string, prompt: string): Promise<unknown> {
   const conteudo = json.choices?.[0]?.message?.content ?? "";
   const bruto = conteudo.trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
   try {
-    return JSON.parse(bruto);
+    return { dados: JSON.stringify(JSON.parse(bruto)) };
   } catch {
     const inicio = bruto.indexOf("{");
     const fim = bruto.lastIndexOf("}");
     if (inicio >= 0 && fim > inicio) {
       try {
-        return JSON.parse(bruto.slice(inicio, fim + 1));
+        return { dados: JSON.stringify(JSON.parse(bruto.slice(inicio, fim + 1))) };
       } catch {
         /* ignora */
       }

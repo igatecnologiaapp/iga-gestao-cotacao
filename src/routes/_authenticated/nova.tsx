@@ -13,6 +13,7 @@ import {
 import { STATUS_OPTIONS, brl, normalize, parseValor } from "@/lib/cotacao";
 import { FornecedorForm } from "@/components/FornecedorForm";
 import { ItemFields, DRAFT_VAZIO, type Draft } from "@/components/ItemFields";
+import { LerEtiqueta } from "@/components/LerEtiqueta";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -321,6 +322,12 @@ function NovaCotacao() {
         )}
 
         <div className="mt-3">
+          <div className="mb-3">
+            <LerEtiqueta onAplicar={(dados) => setDraft((d) => ({ ...d, ...dados }))} />
+            <p className="mt-1 text-center text-xs text-muted-foreground">
+              ou preencha manualmente abaixo
+            </p>
+          </div>
           <ItemFields draft={draft} setDraft={setDraft} sugestoes={sugestoesProduto} />
           <Button variant="outline" className="mt-3 h-12 w-full font-bold" onClick={adicionarItem}>
             <Plus className="size-4" /> Adicionar produto
