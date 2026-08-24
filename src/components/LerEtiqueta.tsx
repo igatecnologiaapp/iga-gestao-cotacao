@@ -111,18 +111,21 @@ export function LerEtiqueta({ onAplicar }: { onAplicar: (dados: Partial<Draft>) 
       toast.error("Informe a descrição do produto.");
       return;
     }
+    if (!UNIDADES.includes(revisao.unidade as (typeof UNIDADES)[number])) {
+      toast.error("Selecione a unidade do produto (não identificada na etiqueta).");
+      return;
+    }
     onAplicar({
       descricao: revisao.descricao.trim(),
       valor: revisao.valor.trim(),
       codigo: revisao.codigo.trim(),
       marca: revisao.marca.trim(),
-      unidade: UNIDADES.includes(revisao.unidade as (typeof UNIDADES)[number])
-        ? revisao.unidade
-        : "UN",
+      unidade: revisao.unidade,
     });
     toast.success("Dados inseridos. Revise e adicione o produto.");
     fechar();
   }
+
 
   const marca = (campo: string) =>
     revisao?.duvidosos.includes(campo) ? (
