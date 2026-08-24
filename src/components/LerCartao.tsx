@@ -106,7 +106,8 @@ export function LerCartao({
     setLendo(true);
     setErro(null);
     try {
-      const d = (await ler({ data: { imagem } })) as LeituraCartao;
+      const { dados: bruto } = await ler({ data: { imagem } });
+      const d = JSON.parse(bruto) as LeituraCartao;
       const empresa = val(d.empresa) ?? "";
       const telefones = (d.telefones ?? []).filter((t) => t && t.numero);
       if (d.legivel === false || (!empresa && telefones.length === 0 && !val(d.email))) {

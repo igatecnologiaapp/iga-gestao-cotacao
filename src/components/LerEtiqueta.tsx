@@ -59,7 +59,8 @@ export function LerEtiqueta({ onAplicar }: { onAplicar: (dados: Partial<Draft>) 
     setLendo(true);
     setErro(null);
     try {
-      const dados = (await ler({ data: { imagem } })) as LeituraEtiqueta;
+      const { dados: bruto } = await ler({ data: { imagem } });
+      const dados = JSON.parse(bruto) as LeituraEtiqueta;
       const descricao = val(dados.descricao) ?? "";
       const valor = val(dados.valor);
       if (dados.legivel === false || (!descricao && valor == null)) {
