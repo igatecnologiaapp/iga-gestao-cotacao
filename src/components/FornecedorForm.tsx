@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ChevronDown } from "lucide-react";
+import { LerCartao } from "@/components/LerCartao";
 
 const VAZIO = {
   nome: "",
@@ -137,6 +138,33 @@ export function FornecedorForm({
 
   return (
     <div className="space-y-4">
+      {!fornecedor && (
+        <div>
+          <LerCartao
+            onAplicar={(d) =>
+              setForm((f) => ({
+                ...f,
+                nome: d.nome || f.nome,
+                contato: d.contato || f.contato,
+                vendedor: d.vendedor || f.vendedor,
+                telefone: d.telefone || f.telefone,
+                whatsapp: d.whatsapp || f.whatsapp,
+                email: d.email || f.email,
+                site: d.site || f.site,
+                endereco: d.endereco || f.endereco,
+                bairro: d.bairro || f.bairro,
+                cidade: d.cidade || f.cidade,
+                uf: d.uf || f.uf,
+                observacoes: [f.observacoes, d.observacoes].filter(Boolean).join(" · "),
+              }))
+            }
+            onSelecionarExistente={(f) => onSaved(f)}
+          />
+          <p className="mt-1 text-center text-xs text-muted-foreground">
+            ou preencha manualmente abaixo
+          </p>
+        </div>
+      )}
       <Campo label="Nome do fornecedor *">
         <Input className="h-12" value={form.nome} onChange={(e) => set("nome")(e.target.value)} maxLength={120} />
       </Campo>
