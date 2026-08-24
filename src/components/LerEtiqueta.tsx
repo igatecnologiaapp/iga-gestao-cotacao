@@ -79,18 +79,21 @@ export function LerEtiqueta({ onAplicar }: { onAplicar: (dados: Partial<Draft>) 
       const candidatos = (dados.precos_candidatos ?? []).filter(
         (c) => typeof c.valor === "number" && c.valor > 0,
       );
+      const unidadeLida = (val(dados.unidade) ?? "").toUpperCase();
       setRevisao({
         descricao,
         valor: valor != null ? valor.toFixed(2).replace(".", ",") : "",
         codigo: val(dados.codigo) ?? "",
         marca: val(dados.marca) ?? "",
-        unidade: (val(dados.unidade) ?? "UN").toUpperCase(),
+        // Unidade não reconhecida NÃO vira "UN": fica vazia para escolha do usuário.
+        unidade: UNIDADES.includes(unidadeLida as (typeof UNIDADES)[number]) ? unidadeLida : "",
         candidatos: candidatos.length > 1 ? candidatos : [],
         duvidosos,
         aviso: dados.varias_etiquetas
           ? "A foto parece ter mais de uma etiqueta. Se os dados não forem os certos, aproxime a câmera de uma etiqueta e tire outra foto."
           : (dados.observacao ?? null),
       });
+
     } catch (e) {
       setErro(
         e instanceof Error
