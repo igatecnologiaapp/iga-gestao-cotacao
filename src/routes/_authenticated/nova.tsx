@@ -321,6 +321,12 @@ function NovaCotacao() {
         )}
 
         <div className="mt-3">
+          <div className="mb-3">
+            <LerEtiqueta onAplicar={(dados) => setDraft((d) => ({ ...d, ...dados }))} />
+            <p className="mt-1 text-center text-xs text-muted-foreground">
+              ou preencha manualmente abaixo
+            </p>
+          </div>
           <ItemFields draft={draft} setDraft={setDraft} sugestoes={sugestoesProduto} />
           <Button variant="outline" className="mt-3 h-12 w-full font-bold" onClick={adicionarItem}>
             <Plus className="size-4" /> Adicionar produto
