@@ -79,18 +79,21 @@ export function LerEtiqueta({ onAplicar }: { onAplicar: (dados: Partial<Draft>) 
       const candidatos = (dados.precos_candidatos ?? []).filter(
         (c) => typeof c.valor === "number" && c.valor > 0,
       );
+      const unidadeLida = (val(dados.unidade) ?? "").toUpperCase();
       setRevisao({
         descricao,
         valor: valor != null ? valor.toFixed(2).replace(".", ",") : "",
         codigo: val(dados.codigo) ?? "",
         marca: val(dados.marca) ?? "",
-        unidade: (val(dados.unidade) ?? "UN").toUpperCase(),
+        // Unidade não reconhecida NÃO vira "UN": fica vazia para escolha do usuário.
+        unidade: UNIDADES.includes(unidadeLida as (typeof UNIDADES)[number]) ? unidadeLida : "",
         candidatos: candidatos.length > 1 ? candidatos : [],
         duvidosos,
         aviso: dados.varias_etiquetas
           ? "A foto parece ter mais de uma etiqueta. Se os dados não forem os certos, aproxime a câmera de uma etiqueta e tire outra foto."
           : (dados.observacao ?? null),
       });
+
     } catch (e) {
       setErro(
         e instanceof Error
@@ -108,18 +111,21 @@ export function LerEtiqueta({ onAplicar }: { onAplicar: (dados: Partial<Draft>) 
       toast.error("Informe a descrição do produto.");
       return;
     }
+    if (!UNIDADES.includes(revisao.unidade as (typeof UNIDADES)[number])) {
+      toast.error("Selecione a unidade do produto (não identificada na etiqueta).");
+      return;
+    }
     onAplicar({
       descricao: revisao.descricao.trim(),
       valor: revisao.valor.trim(),
       codigo: revisao.codigo.trim(),
       marca: revisao.marca.trim(),
-      unidade: UNIDADES.includes(revisao.unidade as (typeof UNIDADES)[number])
-        ? revisao.unidade
-        : "UN",
+      unidade: revisao.unidade,
     });
     toast.success("Dados inseridos. Revise e adicione o produto.");
     fechar();
   }
+
 
   const marca = (campo: string) =>
     revisao?.duvidosos.includes(campo) ? (
@@ -234,14 +240,23 @@ export function LerEtiqueta({ onAplicar }: { onAplicar: (dados: Partial<Draft>) 
                     </div>
                     <div className="space-y-1.5">
                       <Label className="flex items-center text-xs font-bold uppercase text-muted-foreground">
-                        Unidade {marca("unidade")}
+                        Unidade *{" "}
+                        {revisao.unidade ? (
+                          marca("unidade")
+                        ) : (
+                          <span className="ml-2 rounded-full bg-warning/15 px-2 py-0.5 text-[10px] font-bold uppercase text-warning-foreground">
+                            Selecionar
+                          </span>
+                        )}
                       </Label>
                       <Select
                         value={revisao.unidade}
                         onValueChange={(v) => setRevisao({ ...revisao, unidade: v })}
                       >
-                        <SelectTrigger className="h-12 w-full">
-                          <SelectValue />
+                        <SelectTrigger
+                          className={`h-12 w-full ${revisao.unidade ? "" : "border-warning"}`}
+                        >
+                          <SelectValue placeholder="Selecionar unidade" />
                         </SelectTrigger>
                         <SelectContent>
                           {UNIDADES.map((u) => (
@@ -251,7 +266,13 @@ export function LerEtiqueta({ onAplicar }: { onAplicar: (dados: Partial<Draft>) 
                           ))}
                         </SelectContent>
                       </Select>
+                      {!revisao.unidade && (
+                        <p className="text-[11px] text-muted-foreground">
+                          Não identificada na etiqueta. Escolha antes de inserir.
+                        </p>
+                      )}
                     </div>
+
                     <div className="space-y-1.5">
                       <Label className="flex items-center text-xs font-bold uppercase text-muted-foreground">
                         Marca {marca("marca")}
