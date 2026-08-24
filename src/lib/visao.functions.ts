@@ -10,7 +10,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
  * retorna. A rota exige usuário autenticado.
  */
 
-const MODELO = "google/gemini-3-flash";
+const MODELO = "openai/gpt-5.6-sol";
 const GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
 /** Data URL de imagem, limitada a ~4 MB em base64. */
