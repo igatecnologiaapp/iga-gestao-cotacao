@@ -87,6 +87,8 @@ export function PedidoCompra({ cot }: { cot: CotacaoFull }) {
   const [mensagem, setMensagem] = useState("");
   const [editado, setEditado] = useState(false);
   const [salvando, setSalvando] = useState(false);
+  const [revisar, setRevisar] = useState<"whatsapp" | "email" | null>(null);
+
 
   const itensSelecionados: PedidoItem[] = useMemo(
     () =>
