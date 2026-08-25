@@ -343,6 +343,8 @@ function PedidoCard({ pedido }: { pedido: Pedido }) {
   const itens = (pedido.itens as unknown as PedidoItem[]) ?? [];
   const [canal, setCanal] = useState("whatsapp");
   const [obs, setObs] = useState("");
+  const [valorConf, setValorConf] = useState("");
+
   const [prevista, setPrevista] = useState(pedido.entrega_prevista ?? "");
   const [entregue, setEntregue] = useState(pedido.entrega_realizada ?? "");
   const [obsEntrega, setObsEntrega] = useState(pedido.observacao_entrega ?? "");
