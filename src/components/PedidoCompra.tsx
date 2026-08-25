@@ -127,7 +127,7 @@ export function PedidoCompra({ cot }: { cot: CotacaoFull }) {
   ];
 
 
-  async function registrarEnvio(canal: "whatsapp" | "email") {
+  async function registrarEnvio(canal: "whatsapp" | "email" | "manual") {
     if (!itensSelecionados.length) {
       toast.error("Selecione ao menos um produto.");
       return;
