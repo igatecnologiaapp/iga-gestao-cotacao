@@ -111,8 +111,19 @@ export function PedidoCompra({ cot }: { cot: CotacaoFull }) {
   const textoAtual =
     editado && mensagem ? mensagem : montarMensagem(cot, itensSelecionados, total);
 
-  const zap = whatsappLink(cot.fornecedor?.whatsapp);
+  /** WhatsApp: usa o número dedicado e, na ausência dele, telefone/contato cadastrado. */
+  const zap = whatsappLink(
+    cot.fornecedor?.whatsapp ?? cot.fornecedor?.telefone ?? cot.fornecedor?.contato,
+  );
   const email = cot.fornecedor?.email;
+  const pagamentos = [
+    ...new Set(
+      (cot.itens ?? [])
+        .filter((i) => selecao.includes(i.id) && i.pagamento)
+        .map((i) => i.pagamento as string),
+    ),
+  ];
+
 
   async function registrarEnvio(canal: "whatsapp" | "email") {
     if (!itensSelecionados.length) {
