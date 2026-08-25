@@ -1,17 +1,18 @@
-import logoIga from "@/assets/iga-logo.png.asset.json";
 import { cn } from "@/lib/utils";
 
 /**
  * Logotipo oficial da IGA Tecnologia.
- * Sempre em contêiner quadrado com object-contain — proporção original preservada.
+ *
+ * Portabilidade: o arquivo é versionado em `public/iga-logo.png` e servido pelo
+ * próprio build (Lovable ou Docker/VPS). Não depende de rota de assets externa.
  */
 export function LogoIga({ className }: { className?: string }) {
   return (
     <img
-      src={logoIga.url}
+      src="/iga-logo.png"
       alt="IGA Tecnologia"
-      width={512}
-      height={512}
+      width={297}
+      height={297}
       className={cn("aspect-square object-contain", className)}
     />
   );
