@@ -21,6 +21,7 @@ import { Route as AuthenticatedOportunidadesRouteImport } from './routes/_authen
 import { Route as AuthenticatedProdutosRouteImport } from './routes/_authenticated/produtos'
 import { Route as AuthenticatedCotacoesIndexRouteImport } from './routes/_authenticated/cotacoes.index'
 import { Route as AuthenticatedCotacoesIdRouteImport } from './routes/_authenticated/cotacoes.$id'
+import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -84,6 +85,11 @@ const AuthenticatedCotacoesIdRoute = AuthenticatedCotacoesIdRouteImport.update({
   path: '/cotacoes/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
+  id: '/api/public/health',
+  path: '/api/public/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/oportunidades': typeof AuthenticatedOportunidadesRoute
   '/produtos': typeof AuthenticatedProdutosRoute
   '/cotacoes/$id': typeof AuthenticatedCotacoesIdRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/cotacoes/': typeof AuthenticatedCotacoesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/oportunidades': typeof AuthenticatedOportunidadesRoute
   '/produtos': typeof AuthenticatedProdutosRoute
   '/cotacoes/$id': typeof AuthenticatedCotacoesIdRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/cotacoes': typeof AuthenticatedCotacoesIndexRoute
 }
 export interface FileRoutesById {
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/_authenticated/oportunidades': typeof AuthenticatedOportunidadesRoute
   '/_authenticated/produtos': typeof AuthenticatedProdutosRoute
   '/_authenticated/cotacoes/$id': typeof AuthenticatedCotacoesIdRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/_authenticated/cotacoes/': typeof AuthenticatedCotacoesIndexRoute
 }
 export interface FileRouteTypes {
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
     | '/oportunidades'
     | '/produtos'
     | '/cotacoes/$id'
+    | '/api/public/health'
     | '/cotacoes/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -152,6 +162,7 @@ export interface FileRouteTypes {
     | '/oportunidades'
     | '/produtos'
     | '/cotacoes/$id'
+    | '/api/public/health'
     | '/cotacoes'
   id:
     | '__root__'
@@ -166,6 +177,7 @@ export interface FileRouteTypes {
     | '/_authenticated/oportunidades'
     | '/_authenticated/produtos'
     | '/_authenticated/cotacoes/$id'
+    | '/api/public/health'
     | '/_authenticated/cotacoes/'
   fileRoutesById: FileRoutesById
 }
@@ -173,6 +185,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicHealthRoute: typeof ApiPublicHealthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -261,6 +274,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCotacoesIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/health': {
+      id: '/api/public/health'
+      path: '/api/public/health'
+      fullPath: '/api/public/health'
+      preLoaderRoute: typeof ApiPublicHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -295,6 +315,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicHealthRoute: ApiPublicHealthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
