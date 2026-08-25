@@ -57,3 +57,24 @@ export async function arquivoParaDataUrl(file: File, maxLado = 1400): Promise<st
   bitmap.close();
   return canvas.toDataURL("image/jpeg", 0.8);
 }
+
+/** Data URL de imagem aceita na leitura (máx. ~4 MB de imagem em base64). */
+const IMAGEM_RE = /^data:image\/(jpeg|jpg|png|webp);base64,[A-Za-z0-9+/=]+$/;
+const IMAGEM_MAX = 5_600_000;
+
+/**
+ * Valida a entrada das leituras por imagem devolvendo mensagem amigável —
+ * nunca o erro bruto de schema.
+ */
+export function validarEntradaImagem(data: unknown): { imagem: string } {
+  const imagem = (data as { imagem?: unknown } | null)?.imagem;
+  if (typeof imagem !== "string" || !IMAGEM_RE.test(imagem)) {
+    throw new Error("Imagem inválida. Tire a foto novamente ou preencha manualmente.");
+  }
+  if (imagem.length > IMAGEM_MAX) {
+    throw new Error(
+      "A imagem ficou muito grande. Tire a foto novamente, mais próximo, ou preencha manualmente.",
+    );
+  }
+  return { imagem };
+}
