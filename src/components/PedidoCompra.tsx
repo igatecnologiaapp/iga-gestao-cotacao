@@ -364,12 +364,15 @@ function PedidoCard({ pedido }: { pedido: Pedido }) {
   }
 
   const etapa = pedido.entrega_realizada
-    ? "Entrega realizada"
-    : pedido.entrega_prevista
-      ? "Entrega prevista"
-      : pedido.fornecedor_confirmado
-        ? "Compra confirmada"
-        : "Aguardando confirmação do fornecedor";
+    ? "Entregue"
+    : pedido.fornecedor_confirmado
+      ? pedido.entrega_prevista
+        ? "Aguardando entrega"
+        : "Compra confirmada"
+      : "Aguardando confirmação";
+
+  const confirmado = pedido.total_confirmado === null ? null : Number(pedido.total_confirmado);
+  const divergencia = confirmado !== null && confirmado !== Number(pedido.total);
 
   return (
     <article className="surface space-y-3 p-4">
@@ -378,11 +381,36 @@ function PedidoCard({ pedido }: { pedido: Pedido }) {
           <p className="text-sm font-extrabold">{etapa}</p>
           <p className="text-xs text-muted-foreground">
             Pedido preparado {pedido.enviado_em ? dataHora(pedido.enviado_em) : "—"} ·{" "}
-            {pedido.canal === "email" ? "E-mail" : "WhatsApp"}
+            {pedido.canal === "email"
+              ? "E-mail"
+              : pedido.canal === "manual"
+                ? "Contato manual"
+                : "WhatsApp"}
           </p>
         </div>
-        <span className="shrink-0 text-base font-extrabold">{brl(Number(pedido.total))}</span>
+        <span className="shrink-0 text-right">
+          <span className="block text-base font-extrabold">
+            Cotado: {brl(Number(pedido.total))}
+          </span>
+          {confirmado !== null && (
+            <span
+              className={
+                "block text-sm font-extrabold " + (divergencia ? "text-destructive" : "text-success")
+              }
+            >
+              Confirmado: {brl(confirmado)}
+            </span>
+          )}
+        </span>
       </div>
+
+      {divergencia && (
+        <p className="rounded-xl border border-destructive/40 bg-destructive/10 p-2.5 text-xs font-semibold text-destructive">
+          Divergência: o fornecedor confirmou valor diferente do cotado. O valor cotado permanece
+          preservado no histórico.
+        </p>
+      )}
+
 
       <ul className="space-y-1 text-xs text-muted-foreground">
         {itens.map((i) => (
