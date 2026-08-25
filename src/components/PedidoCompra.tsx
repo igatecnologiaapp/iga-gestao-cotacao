@@ -279,6 +279,58 @@ export function PedidoCompra({ cot }: { cot: CotacaoFull }) {
         </div>
       )}
 
+      <AlertDialog open={revisar !== null} onOpenChange={(v) => !v && setRevisar(null)}>
+        <AlertDialogContent className="max-h-[85vh] overflow-y-auto">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Revisar antes de enviar</AlertDialogTitle>
+            <AlertDialogDescription>
+              Confira os dados abaixo. O aplicativo apenas abre o{" "}
+              {revisar === "email" ? "seu programa de e-mail" : "WhatsApp"} com a mensagem pronta —
+              o envio é feito por você.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-2 text-sm">
+            <p className="font-bold">{cot.fornecedor?.nome}</p>
+            <p className="text-xs text-muted-foreground">
+              {revisar === "email" ? email : (cot.fornecedor?.whatsapp ?? cot.fornecedor?.telefone ?? cot.fornecedor?.contato)}
+            </p>
+            <ul className="space-y-1 rounded-xl bg-secondary p-3 text-xs">
+              {itensSelecionados.map((i) => (
+                <li key={`rev-${i.id}`}>
+                  {i.descricao} — {i.quantidade} {i.unidade} × {brl(i.valor)} ={" "}
+                  <strong>{brl(i.subtotal)}</strong>
+                </li>
+              ))}
+            </ul>
+            <div className="flex items-center justify-between">
+              <span className="font-semibold">Total</span>
+              <span className="text-base font-extrabold">{brl(total)}</span>
+            </div>
+            {pagamentos.length > 0 && (
+              <p className="text-xs text-muted-foreground">
+                Pagamento: {pagamentos.join(" · ")}
+              </p>
+            )}
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel className="h-11">Voltar</AlertDialogCancel>
+            <AlertDialogAction
+              className="h-11"
+              onClick={() => {
+                const canal = revisar;
+                setRevisar(null);
+                if (canal) void registrarEnvio(canal);
+              }}
+            >
+              Confirmar e abrir {revisar === "email" ? "e-mail" : "WhatsApp"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+
       {meus.map((p) => (
         <PedidoCard key={p.id} pedido={p} />
       ))}
