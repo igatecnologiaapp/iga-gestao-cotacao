@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { CheckCircle2, Mail, MessageCircle, ShoppingCart, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,12 +11,22 @@ import {
   type Pedido,
   type PedidoItem,
 } from "@/lib/queries";
-import { brl, dataHora, whatsappLink } from "@/lib/cotacao";
+import { brl, dataHora, parseValor, whatsappLink } from "@/lib/cotacao";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Select,
   SelectContent,
@@ -23,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 
 const CANAIS = [
   { value: "whatsapp", label: "WhatsApp" },
@@ -75,6 +87,8 @@ export function PedidoCompra({ cot }: { cot: CotacaoFull }) {
   const [mensagem, setMensagem] = useState("");
   const [editado, setEditado] = useState(false);
   const [salvando, setSalvando] = useState(false);
+  const [revisar, setRevisar] = useState<"whatsapp" | "email" | null>(null);
+
 
   const itensSelecionados: PedidoItem[] = useMemo(
     () =>
@@ -99,10 +113,21 @@ export function PedidoCompra({ cot }: { cot: CotacaoFull }) {
   const textoAtual =
     editado && mensagem ? mensagem : montarMensagem(cot, itensSelecionados, total);
 
-  const zap = whatsappLink(cot.fornecedor?.whatsapp);
+  /** WhatsApp: usa o número dedicado e, na ausência dele, telefone/contato cadastrado. */
+  const zap = whatsappLink(
+    cot.fornecedor?.whatsapp ?? cot.fornecedor?.telefone ?? cot.fornecedor?.contato,
+  );
   const email = cot.fornecedor?.email;
+  const pagamentos = [
+    ...new Set(
+      (cot.itens ?? [])
+        .filter((i) => selecao.includes(i.id) && i.pagamento)
+        .map((i) => i.pagamento as string),
+    ),
+  ];
 
-  async function registrarEnvio(canal: "whatsapp" | "email") {
+
+  async function registrarEnvio(canal: "whatsapp" | "email" | "manual") {
     if (!itensSelecionados.length) {
       toast.error("Selecione ao menos um produto.");
       return;
@@ -116,7 +141,8 @@ export function PedidoCompra({ cot }: { cot: CotacaoFull }) {
         total,
         mensagem: textoAtual,
         canal,
-        enviado_em: new Date().toISOString(),
+        ...(canal === "manual" ? {} : { enviado_em: new Date().toISOString() }),
+
       });
       if (error) throw error;
       invalidar();
@@ -203,30 +229,47 @@ export function PedidoCompra({ cot }: { cot: CotacaoFull }) {
             <Button
               className="h-12 font-bold"
               disabled={salvando || !zap || !itensSelecionados.length}
-              onClick={() => registrarEnvio("whatsapp")}
+              onClick={() => setRevisar("whatsapp")}
             >
               <MessageCircle className="size-4" /> Enviar pedido pelo WhatsApp
             </Button>
             {!zap && (
               <p className="text-xs text-muted-foreground">
-                Cadastre o WhatsApp do fornecedor para habilitar o envio.
+                Fornecedor sem WhatsApp/telefone cadastrado.{" "}
+                <Link to="/fornecedores" className="font-semibold underline">
+                  Editar fornecedor
+                </Link>{" "}
+                ou registre a confirmação manualmente depois de falar com ele.
               </p>
             )}
             <Button
               variant="outline"
               className="h-12 font-bold"
               disabled={salvando || !email || !itensSelecionados.length}
-              onClick={() => registrarEnvio("email")}
+              onClick={() => setRevisar("email")}
             >
               <Mail className="size-4" /> Enviar pedido por e-mail
             </Button>
             {!email && (
               <p className="text-xs text-muted-foreground">
-                Cadastre o e-mail do fornecedor para habilitar o envio.
+                Fornecedor sem e-mail cadastrado.{" "}
+                <Link to="/fornecedores" className="font-semibold underline">
+                  Editar fornecedor
+                </Link>
+                .
               </p>
             )}
+            <Button
+              variant="outline"
+              className="h-11 font-bold"
+              disabled={salvando || !itensSelecionados.length}
+              onClick={() => registrarEnvio("manual")}
+            >
+              Registrar pedido sem envio (contato manual)
+            </Button>
             <Button variant="ghost" className="h-11" onClick={() => setAbrir(false)}>
               Cancelar
+
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">
@@ -235,6 +278,58 @@ export function PedidoCompra({ cot }: { cot: CotacaoFull }) {
           </p>
         </div>
       )}
+
+      <AlertDialog open={revisar !== null} onOpenChange={(v) => !v && setRevisar(null)}>
+        <AlertDialogContent className="max-h-[85vh] overflow-y-auto">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Revisar antes de enviar</AlertDialogTitle>
+            <AlertDialogDescription>
+              Confira os dados abaixo. O aplicativo apenas abre o{" "}
+              {revisar === "email" ? "seu programa de e-mail" : "WhatsApp"} com a mensagem pronta —
+              o envio é feito por você.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-2 text-sm">
+            <p className="font-bold">{cot.fornecedor?.nome}</p>
+            <p className="text-xs text-muted-foreground">
+              {revisar === "email" ? email : (cot.fornecedor?.whatsapp ?? cot.fornecedor?.telefone ?? cot.fornecedor?.contato)}
+            </p>
+            <ul className="space-y-1 rounded-xl bg-secondary p-3 text-xs">
+              {itensSelecionados.map((i) => (
+                <li key={`rev-${i.id}`}>
+                  {i.descricao} — {i.quantidade} {i.unidade} × {brl(i.valor)} ={" "}
+                  <strong>{brl(i.subtotal)}</strong>
+                </li>
+              ))}
+            </ul>
+            <div className="flex items-center justify-between">
+              <span className="font-semibold">Total</span>
+              <span className="text-base font-extrabold">{brl(total)}</span>
+            </div>
+            {pagamentos.length > 0 && (
+              <p className="text-xs text-muted-foreground">
+                Pagamento: {pagamentos.join(" · ")}
+              </p>
+            )}
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel className="h-11">Voltar</AlertDialogCancel>
+            <AlertDialogAction
+              className="h-11"
+              onClick={() => {
+                const canal = revisar;
+                setRevisar(null);
+                if (canal) void registrarEnvio(canal);
+              }}
+            >
+              Confirmar e abrir {revisar === "email" ? "e-mail" : "WhatsApp"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
 
       {meus.map((p) => (
         <PedidoCard key={p.id} pedido={p} />
@@ -248,6 +343,8 @@ function PedidoCard({ pedido }: { pedido: Pedido }) {
   const itens = (pedido.itens as unknown as PedidoItem[]) ?? [];
   const [canal, setCanal] = useState("whatsapp");
   const [obs, setObs] = useState("");
+  const [valorConf, setValorConf] = useState("");
+
   const [prevista, setPrevista] = useState(pedido.entrega_prevista ?? "");
   const [entregue, setEntregue] = useState(pedido.entrega_realizada ?? "");
   const [obsEntrega, setObsEntrega] = useState(pedido.observacao_entrega ?? "");
@@ -269,12 +366,15 @@ function PedidoCard({ pedido }: { pedido: Pedido }) {
   }
 
   const etapa = pedido.entrega_realizada
-    ? "Entrega realizada"
-    : pedido.entrega_prevista
-      ? "Entrega prevista"
-      : pedido.fornecedor_confirmado
-        ? "Compra confirmada"
-        : "Aguardando confirmação do fornecedor";
+    ? "Entregue"
+    : pedido.fornecedor_confirmado
+      ? pedido.entrega_prevista
+        ? "Aguardando entrega"
+        : "Compra confirmada"
+      : "Aguardando confirmação";
+
+  const confirmado = pedido.total_confirmado === null ? null : Number(pedido.total_confirmado);
+  const divergencia = confirmado !== null && confirmado !== Number(pedido.total);
 
   return (
     <article className="surface space-y-3 p-4">
@@ -283,11 +383,36 @@ function PedidoCard({ pedido }: { pedido: Pedido }) {
           <p className="text-sm font-extrabold">{etapa}</p>
           <p className="text-xs text-muted-foreground">
             Pedido preparado {pedido.enviado_em ? dataHora(pedido.enviado_em) : "—"} ·{" "}
-            {pedido.canal === "email" ? "E-mail" : "WhatsApp"}
+            {pedido.canal === "email"
+              ? "E-mail"
+              : pedido.canal === "manual"
+                ? "Contato manual"
+                : "WhatsApp"}
           </p>
         </div>
-        <span className="shrink-0 text-base font-extrabold">{brl(Number(pedido.total))}</span>
+        <span className="shrink-0 text-right">
+          <span className="block text-base font-extrabold">
+            Cotado: {brl(Number(pedido.total))}
+          </span>
+          {confirmado !== null && (
+            <span
+              className={
+                "block text-sm font-extrabold " + (divergencia ? "text-destructive" : "text-success")
+              }
+            >
+              Confirmado: {brl(confirmado)}
+            </span>
+          )}
+        </span>
       </div>
+
+      {divergencia && (
+        <p className="rounded-xl border border-destructive/40 bg-destructive/10 p-2.5 text-xs font-semibold text-destructive">
+          Divergência: o fornecedor confirmou valor diferente do cotado. O valor cotado permanece
+          preservado no histórico.
+        </p>
+      )}
+
 
       <ul className="space-y-1 text-xs text-muted-foreground">
         {itens.map((i) => (
@@ -314,6 +439,22 @@ function PedidoCard({ pedido }: { pedido: Pedido }) {
               ))}
             </SelectContent>
           </Select>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+              Valor confirmado pelo fornecedor
+            </Label>
+            <Input
+              inputMode="decimal"
+              className="h-11 bg-background"
+              placeholder={brl(Number(pedido.total))}
+              value={valorConf}
+              onChange={(e) => setValorConf(e.target.value)}
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Deixe em branco se o fornecedor manteve o valor cotado ({brl(Number(pedido.total))}).
+              O valor cotado nunca é sobrescrito.
+            </p>
+          </div>
           <Textarea
             className="bg-background"
             placeholder="Observação (ex.: preço ajustado para R$ 8,50)"
@@ -324,18 +465,25 @@ function PedidoCard({ pedido }: { pedido: Pedido }) {
           <Button
             className="h-11 w-full font-bold"
             disabled={salvando}
-            onClick={() =>
-              atualizar(
+            onClick={() => {
+              const v = valorConf.trim() ? parseValor(valorConf) : Number(pedido.total);
+              if (!Number.isFinite(v)) {
+                toast.error("Valor confirmado inválido.");
+                return;
+              }
+              void atualizar(
                 {
                   fornecedor_confirmado: true,
                   confirmado_em: new Date().toISOString(),
                   canal_confirmacao: canal,
                   observacao_confirmacao: obs.trim() || null,
+                  total_confirmado: v,
                 },
                 "Compra confirmada pelo fornecedor.",
-              )
-            }
+              );
+            }}
           >
+
             <CheckCircle2 className="size-4" /> Fornecedor confirmou
           </Button>
         </div>

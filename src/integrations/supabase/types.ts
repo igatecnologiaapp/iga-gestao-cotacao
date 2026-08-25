@@ -221,6 +221,7 @@ export type Database = {
           observacao_confirmacao: string | null
           observacao_entrega: string | null
           total: number
+          total_confirmado: number | null
           updated_at: string
           user_id: string
         }
@@ -241,6 +242,7 @@ export type Database = {
           observacao_confirmacao?: string | null
           observacao_entrega?: string | null
           total?: number
+          total_confirmado?: number | null
           updated_at?: string
           user_id?: string
         }
@@ -261,6 +263,7 @@ export type Database = {
           observacao_confirmacao?: string | null
           observacao_entrega?: string | null
           total?: number
+          total_confirmado?: number | null
           updated_at?: string
           user_id?: string
         }

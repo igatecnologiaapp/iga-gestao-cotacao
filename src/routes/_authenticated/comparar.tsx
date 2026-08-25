@@ -111,7 +111,15 @@ function Comparar() {
                     {item.garantia && <Tag>Garantia: {item.garantia}</Tag>}
                   </div>
                 </Link>
+                <Link
+                  to="/cotacoes/$id"
+                  params={{ id: cotacao.id }}
+                  className="mt-1 block rounded-xl border border-border px-3 py-2.5 text-center text-xs font-extrabold uppercase tracking-wide"
+                >
+                  Decidir compra com este fornecedor
+                </Link>
               </li>
+
             );
           })}
         </ul>

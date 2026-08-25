@@ -1,0 +1,1 @@
+ALTER TABLE public.pedidos_compra ADD COLUMN IF NOT EXISTS total_confirmado numeric;
