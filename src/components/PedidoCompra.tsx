@@ -141,7 +141,8 @@ export function PedidoCompra({ cot }: { cot: CotacaoFull }) {
         total,
         mensagem: textoAtual,
         canal,
-        enviado_em: new Date().toISOString(),
+        ...(canal === "manual" ? {} : { enviado_em: new Date().toISOString() }),
+
       });
       if (error) throw error;
       invalidar();
