@@ -137,12 +137,25 @@ Regras rígidas:
 - Use "confianca": "baixa" em qualquer campo duvidoso.
 Responda apenas o JSON.`;
 
+/** Valida a entrada devolvendo mensagem amigável (nunca o erro bruto do schema). */
+function validarEntrada(data: unknown): { imagem: string } {
+  const r = z.object({ imagem: imagemSchema }).safeParse(data);
+  if (r.success) return r.data;
+  const primeiro = r.error.issues[0];
+  throw new Error(
+    primeiro?.code === "too_big"
+      ? "A imagem ficou muito grande. Tire a foto novamente, mais próximo, ou preencha manualmente."
+      : "Imagem inválida. Tire a foto novamente ou preencha manualmente.",
+  );
+}
+
 export const lerEtiqueta = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => z.object({ imagem: imagemSchema }).parse(data))
+  .inputValidator(validarEntrada)
   .handler(async ({ data }) => chamarVisao(data.imagem, PROMPT_ETIQUETA));
 
 export const lerCartao = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => z.object({ imagem: imagemSchema }).parse(data))
+  .inputValidator(validarEntrada)
   .handler(async ({ data }) => chamarVisao(data.imagem, PROMPT_CARTAO));
+
