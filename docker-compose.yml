@@ -1,0 +1,39 @@
+# IGA Tecnologia — App de Cotação Rápida
+# Deploy reproduzível em VPS. Nenhuma credencial real neste arquivo:
+# os valores vêm do ambiente do host ou de um arquivo .env NÃO versionado.
+services:
+  app:
+    build:
+      context: .
+      args:
+        # Build-time: embutidas no bundle do frontend (valores publicáveis).
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_PUBLISHABLE_KEY: ${VITE_SUPABASE_PUBLISHABLE_KEY}
+        VITE_SUPABASE_PROJECT_ID: ${VITE_SUPABASE_PROJECT_ID}
+    image: iga-cotacao-rapida:latest
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      # Runtime do servidor (não ficam na imagem).
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY}
+      SUPABASE_PROJECT_ID: ${SUPABASE_PROJECT_ID}
+      # Inteligência (opcional). Sem credencial o app funciona sem as leituras.
+      AI_PROVIDER: ${AI_PROVIDER:-}
+      AI_BASE_URL: ${AI_BASE_URL:-}
+      AI_MODEL: ${AI_MODEL:-}
+      AI_API_KEY: ${AI_API_KEY:-}
+      LOVABLE_API_KEY: ${LOVABLE_API_KEY:-}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/public/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s

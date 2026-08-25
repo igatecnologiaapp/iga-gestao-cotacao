@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { LogoIga } from "@/components/LogoIga";
 import { Input } from "@/components/ui/input";
@@ -38,7 +37,11 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: destino, replace: true });
+      if (!data.session) return;
+      const salvo = sessionStorage.getItem("pos_login");
+      sessionStorage.removeItem("pos_login");
+      const alvo = salvo && salvo.startsWith("/") && !salvo.startsWith("//") ? salvo : destino;
+      navigate({ to: alvo, replace: true });
     });
   }, [destino, navigate]);
 
@@ -72,15 +75,15 @@ function AuthPage() {
   }
 
   async function google() {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+    // OAuth nativo do Supabase: o redirect volta para a origem atual, seja ela
+    // o preview de desenvolvimento ou o domínio próprio da VPS. Nenhum domínio
+    // fica fixo no código; as URLs permitidas são cadastradas no Supabase.
+    if (destino !== "/inicio") sessionStorage.setItem("pos_login", destino);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth` },
     });
-    if (result.error) {
-      toast.error("Não foi possível entrar com Google.");
-      return;
-    }
-    if (result.redirected) return;
-    navigate({ to: destino, replace: true });
+    if (error) toast.error("Não foi possível entrar com Google.");
   }
 
   return (
