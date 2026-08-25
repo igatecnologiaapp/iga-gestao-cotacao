@@ -228,30 +228,47 @@ export function PedidoCompra({ cot }: { cot: CotacaoFull }) {
             <Button
               className="h-12 font-bold"
               disabled={salvando || !zap || !itensSelecionados.length}
-              onClick={() => registrarEnvio("whatsapp")}
+              onClick={() => setRevisar("whatsapp")}
             >
               <MessageCircle className="size-4" /> Enviar pedido pelo WhatsApp
             </Button>
             {!zap && (
               <p className="text-xs text-muted-foreground">
-                Cadastre o WhatsApp do fornecedor para habilitar o envio.
+                Fornecedor sem WhatsApp/telefone cadastrado.{" "}
+                <Link to="/fornecedores" className="font-semibold underline">
+                  Editar fornecedor
+                </Link>{" "}
+                ou registre a confirmação manualmente depois de falar com ele.
               </p>
             )}
             <Button
               variant="outline"
               className="h-12 font-bold"
               disabled={salvando || !email || !itensSelecionados.length}
-              onClick={() => registrarEnvio("email")}
+              onClick={() => setRevisar("email")}
             >
               <Mail className="size-4" /> Enviar pedido por e-mail
             </Button>
             {!email && (
               <p className="text-xs text-muted-foreground">
-                Cadastre o e-mail do fornecedor para habilitar o envio.
+                Fornecedor sem e-mail cadastrado.{" "}
+                <Link to="/fornecedores" className="font-semibold underline">
+                  Editar fornecedor
+                </Link>
+                .
               </p>
             )}
+            <Button
+              variant="outline"
+              className="h-11 font-bold"
+              disabled={salvando || !itensSelecionados.length}
+              onClick={() => registrarEnvio("manual")}
+            >
+              Registrar pedido sem envio (contato manual)
+            </Button>
             <Button variant="ghost" className="h-11" onClick={() => setAbrir(false)}>
               Cancelar
+
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">
