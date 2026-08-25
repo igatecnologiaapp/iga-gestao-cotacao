@@ -1,7 +1,15 @@
 node_modules
-.output
 .git
+.github
+.output
+dist
+.wrangler
+.tanstack
+.nitro
 .env
 .env.*
 !.env.example
-.vscode
+*.log
+.DS_Store
+docs
+.lovable
