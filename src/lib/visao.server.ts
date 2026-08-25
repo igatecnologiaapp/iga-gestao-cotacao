@@ -6,8 +6,7 @@
  * devolvida ao cliente — retorna somente o texto interpretado.
  */
 
-const MODELO = "openai/gpt-5.6-sol";
-const GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
+import { configIA, IA_NAO_CONFIGURADA, urlChatCompletions } from "@/lib/ai-provider.server";
 
 export const PROMPT_ETIQUETA = `Você lê etiquetas de preço de gôndola, prateleira, expositor, balcão, feira ou distribuidor no Brasil.
 Analise a imagem e devolva SOMENTE um JSON com este formato:
@@ -63,19 +62,19 @@ Responda apenas o JSON.`;
 
 /** Retorna o JSON interpretado já validado, serializado como texto. */
 export async function chamarVisao(imagem: string, prompt: string): Promise<{ dados: string }> {
-  const apiKey = process.env["LOVABLE_API_KEY"];
-  if (!apiKey) throw new Error("Serviço de leitura não configurado. Preencha manualmente.");
+  const cfg = configIA();
+  if (!cfg.apiKey) throw new Error(IA_NAO_CONFIGURADA);
 
   let resposta: Response;
   try {
-    resposta = await fetch(GATEWAY, {
+    resposta = await fetch(urlChatCompletions(cfg), {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${cfg.apiKey}`,
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        model: MODELO,
+        model: cfg.model,
         messages: [
           {
             role: "user",
@@ -108,7 +107,7 @@ export async function chamarVisao(imagem: string, prompt: string): Promise<{ dad
       throw new Error("A leitura inteligente está indisponível nesta conta. Preencha manualmente.");
     }
     if (resposta.status === 401) {
-      throw new Error("Serviço de leitura não configurado. Preencha manualmente.");
+      throw new Error(IA_NAO_CONFIGURADA);
     }
     throw new Error("Não foi possível ler a imagem agora. Tente novamente ou preencha manualmente.");
   }
