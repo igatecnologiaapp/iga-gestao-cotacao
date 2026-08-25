@@ -437,6 +437,22 @@ function PedidoCard({ pedido }: { pedido: Pedido }) {
               ))}
             </SelectContent>
           </Select>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+              Valor confirmado pelo fornecedor
+            </Label>
+            <Input
+              inputMode="decimal"
+              className="h-11 bg-background"
+              placeholder={brl(Number(pedido.total))}
+              value={valorConf}
+              onChange={(e) => setValorConf(e.target.value)}
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Deixe em branco se o fornecedor manteve o valor cotado ({brl(Number(pedido.total))}).
+              O valor cotado nunca é sobrescrito.
+            </p>
+          </div>
           <Textarea
             className="bg-background"
             placeholder="Observação (ex.: preço ajustado para R$ 8,50)"
@@ -447,18 +463,25 @@ function PedidoCard({ pedido }: { pedido: Pedido }) {
           <Button
             className="h-11 w-full font-bold"
             disabled={salvando}
-            onClick={() =>
-              atualizar(
+            onClick={() => {
+              const v = valorConf.trim() ? parseValor(valorConf) : Number(pedido.total);
+              if (!Number.isFinite(v)) {
+                toast.error("Valor confirmado inválido.");
+                return;
+              }
+              void atualizar(
                 {
                   fornecedor_confirmado: true,
                   confirmado_em: new Date().toISOString(),
                   canal_confirmacao: canal,
                   observacao_confirmacao: obs.trim() || null,
+                  total_confirmado: v,
                 },
                 "Compra confirmada pelo fornecedor.",
-              )
-            }
+              );
+            }}
           >
+
             <CheckCircle2 className="size-4" /> Fornecedor confirmou
           </Button>
         </div>
