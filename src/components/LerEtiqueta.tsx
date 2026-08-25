@@ -127,8 +127,16 @@ export function LerEtiqueta({ onAplicar }: { onAplicar: (dados: Partial<Draft>) 
   }
 
 
-  const marca = (campo: string) =>
-    revisao?.duvidosos.includes(campo) ? (
+  // Sem valor lido não há o que "confirmar": o campo fica neutro para preenchimento manual.
+  const marca = (campo: keyof Revisao) => {
+    const vazio = !String(revisao?.[campo] ?? "").trim();
+    if (vazio)
+      return (
+        <span className="ml-2 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase text-muted-foreground">
+          Não identificado
+        </span>
+      );
+    return revisao?.duvidosos.includes(campo as string) ? (
       <span className="ml-2 rounded-full bg-warning/15 px-2 py-0.5 text-[10px] font-bold uppercase text-warning-foreground">
         Verificar
       </span>
@@ -137,6 +145,8 @@ export function LerEtiqueta({ onAplicar }: { onAplicar: (dados: Partial<Draft>) 
         Confirmado
       </span>
     );
+  };
+
 
   return (
     <>
