@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { CheckCircle2, Mail, MessageCircle, ShoppingCart, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,12 +11,22 @@ import {
   type Pedido,
   type PedidoItem,
 } from "@/lib/queries";
-import { brl, dataHora, whatsappLink } from "@/lib/cotacao";
+import { brl, dataHora, parseValor, whatsappLink } from "@/lib/cotacao";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Select,
   SelectContent,
@@ -23,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 
 const CANAIS = [
   { value: "whatsapp", label: "WhatsApp" },
