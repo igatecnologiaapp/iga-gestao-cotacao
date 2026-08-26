@@ -27,6 +27,7 @@ function Fornecedores() {
   const { data: cotacoes = [] } = useCotacoes();
   const [termo, setTermo] = useState("");
   const [novo, setNovo] = useState(false);
+  const [editandoId, setEditandoId] = useState<string | null>(null);
 
   const analise = useMemo(() => {
     const grupos = agruparProdutos(cotacoes);
@@ -108,6 +109,14 @@ function Fornecedores() {
                 const zap = whatsappLink(f.whatsapp ?? f.contato);
                 return (
                   <li key={f.id} className="surface p-4">
+                    {editandoId === f.id ? (
+                      <FornecedorForm
+                        fornecedor={f}
+                        onSaved={() => setEditandoId(null)}
+                        onCancel={() => setEditandoId(null)}
+                      />
+                    ) : (
+                      <>
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="truncate font-bold">{f.nome}</p>
@@ -138,7 +147,17 @@ function Fornecedores() {
                           Nova cotação
                         </Link>
                       </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-10"
+                        onClick={() => setEditandoId(f.id)}
+                      >
+                        <Pencil className="size-4" /> Editar
+                      </Button>
                     </div>
+                      </>
+                    )}
                   </li>
                 );
               })}
