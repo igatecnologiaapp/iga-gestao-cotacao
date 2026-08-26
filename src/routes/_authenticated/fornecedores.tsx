@@ -27,6 +27,7 @@ function Fornecedores() {
   const { data: cotacoes = [] } = useCotacoes();
   const [termo, setTermo] = useState("");
   const [novo, setNovo] = useState(false);
+  const [editandoId, setEditandoId] = useState<string | null>(null);
 
   const analise = useMemo(() => {
     const grupos = agruparProdutos(cotacoes);
