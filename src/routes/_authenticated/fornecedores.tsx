@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { MessageCircle, Plus, Search } from "lucide-react";
+import { MessageCircle, Pencil, Plus, Search } from "lucide-react";
 import { useCotacoes, useFornecedores, agruparProdutos } from "@/lib/queries";
 import { dataCurta, normalize, whatsappLink } from "@/lib/cotacao";
 import { FornecedorForm } from "@/components/FornecedorForm";
