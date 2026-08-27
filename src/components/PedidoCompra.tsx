@@ -382,7 +382,7 @@ function PedidoCard({ pedido }: { pedido: Pedido }) {
         <div className="min-w-0">
           <p className="text-sm font-extrabold">{etapa}</p>
           <p className="text-xs text-muted-foreground">
-            Pedido preparado {pedido.enviado_em ? dataHora(pedido.enviado_em) : "—"} ·{" "}
+            Pedido preparado {dataHora(pedido.enviado_em ?? pedido.created_at)} ·{" "}
             {pedido.canal === "email"
               ? "E-mail"
               : pedido.canal === "manual"
