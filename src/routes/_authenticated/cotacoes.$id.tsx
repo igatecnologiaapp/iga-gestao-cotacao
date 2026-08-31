@@ -11,6 +11,7 @@ import {
   precoUnidade,
   whatsappLink,
 } from "@/lib/cotacao";
+import { ResumoMercado } from "@/components/PrecoMercado";
 import { PedidoCompra } from "@/components/PedidoCompra";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
