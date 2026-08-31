@@ -56,12 +56,29 @@ function Comparar() {
           <Resumo rotulo="Maior" valor={brl(grupo.maior)} destaque="destructive" />
         </div>
 
+        {grupo.precoOnline != null && (
+          <div className="surface p-3">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+              Referência de mercado — preço médio online
+            </p>
+            <p className="text-lg font-extrabold">{brl(grupo.precoOnline)}</p>
+            <p className="text-[11px] text-muted-foreground">
+              {grupo.precoOnlineEm
+                ? `Pesquisado em ${new Date(grupo.precoOnlineEm).toLocaleDateString("pt-BR")}`
+                : ""}
+              {grupo.precoOnlineFonte ? ` · ${grupo.precoOnlineFonte}` : ""} · não entra no cálculo
+              de menor/maior fornecedor.
+            </p>
+          </div>
+        )}
+
         {grupo.unidades.length > 1 && (
           <p className="rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-xs font-semibold text-destructive">
             Atenção: este produto foi cotado em unidades diferentes ({grupo.unidades.join(", ")}).
             Confira a unidade antes de comparar os preços.
           </p>
         )}
+
 
 
         <ul className="space-y-2">
