@@ -127,6 +127,12 @@ function Comparar() {
                     {item.frete && <Tag>Frete: {item.frete}</Tag>}
                     {item.garantia && <Tag>Garantia: {item.garantia}</Tag>}
                   </div>
+                  {grupo.precoOnline != null && (
+                    <div className="mt-2">
+                      <SeloCompetitividade compra={valor} online={grupo.precoOnline} />
+                    </div>
+                  )}
+
                 </Link>
                 <Link
                   to="/cotacoes/$id"
