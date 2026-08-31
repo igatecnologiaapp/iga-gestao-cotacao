@@ -71,7 +71,12 @@ export type ProdutoResumo = {
   unidades: string[];
   /** Produto inativado: todos os registros marcados como arquivados. */
   arquivado: boolean;
+  /** Referência de mercado mais recente informada (preço médio online). */
+  precoOnline: number | null;
+  precoOnlineEm: string | null;
+  precoOnlineFonte: string | null;
 };
+
 
 /** Agrupa todos os itens cotados por chave normalizada da descrição. */
 export function agruparProdutos(
