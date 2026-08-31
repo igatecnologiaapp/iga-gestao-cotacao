@@ -111,3 +111,87 @@ export function interesseAgregado(valores: number[]) {
   const soma = valores.reduce((a, b) => a + b, 0);
   return Math.round((soma + 3 * 2) / (valores.length + 2));
 }
+
+/* ------------------------------------------------------------------ *
+ * Referência de mercado (preço médio de venda na internet)
+ * ------------------------------------------------------------------ */
+
+/**
+ * Faixas de competitividade sobre o custo (percentual do preço médio online
+ * acima do preço de compra). Centralizado aqui para futura configuração.
+ */
+export const FAIXAS_COMPETITIVIDADE = [
+  { min: 40, chave: "muito", label: "Muito competitivo", tom: "success" },
+  { min: 20, chave: "competitivo", label: "Competitivo", tom: "success" },
+  { min: 10, chave: "atencao", label: "Atenção", tom: "warning" },
+  { min: -Infinity, chave: "pouco", label: "Pouco competitivo", tom: "destructive" },
+] as const;
+
+export const FONTES_PRECO_ONLINE = [
+  "Mercado Livre",
+  "Amazon",
+  "Magazine Luiza",
+  "Loja do fabricante",
+  "Pesquisa Google",
+  "Outro",
+] as const;
+
+export type ComparativoMercado = {
+  compra: number;
+  online: number;
+  diferenca: number;
+  percentual: number;
+  label: string;
+  tom: string;
+  chave: string;
+};
+
+/**
+ * Diferença comercial entre o preço de compra e o preço médio online.
+ * diferenca = online - compra
+ * percentual = ((online - compra) / compra) * 100
+ * NÃO é lucro: não considera impostos, frete, comissões e demais custos.
+ */
+export function compararMercado(
+  compra: number | null | undefined,
+  online: number | null | undefined,
+): ComparativoMercado | null {
+  const c = Number(compra);
+  const o = Number(online);
+  if (!Number.isFinite(c) || !Number.isFinite(o) || c <= 0 || o <= 0) return null;
+  const diferenca = o - c;
+  const percentual = (diferenca / c) * 100;
+  const faixa = FAIXAS_COMPETITIVIDADE.find((f) => percentual >= f.min)!;
+  return {
+    compra: c,
+    online: o,
+    diferenca,
+    percentual,
+    label: faixa.label,
+    tom: faixa.tom,
+    chave: faixa.chave,
+  };
+}
+
+export function percentualTexto(valor: number) {
+  const sinal = valor > 0 ? "+" : "";
+  return `${sinal}${valor.toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}%`;
+}
+
+/** Monta a busca externa (Google) com os dados disponíveis do produto. */
+export function buscaPrecoUrl(p: {
+  descricao?: string;
+  marca?: string;
+  modelo?: string;
+  codigo?: string;
+}) {
+  const termo = [p.descricao, p.marca, p.modelo, p.codigo]
+    .map((t) => (t ?? "").trim())
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+  return `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(termo || "produto")}`;
+}

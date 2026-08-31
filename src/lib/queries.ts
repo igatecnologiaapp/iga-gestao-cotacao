@@ -71,7 +71,12 @@ export type ProdutoResumo = {
   unidades: string[];
   /** Produto inativado: todos os registros marcados como arquivados. */
   arquivado: boolean;
+  /** Referência de mercado mais recente informada (preço médio online). */
+  precoOnline: number | null;
+  precoOnlineEm: string | null;
+  precoOnlineFonte: string | null;
 };
+
 
 /** Agrupa todos os itens cotados por chave normalizada da descrição. */
 export function agruparProdutos(
@@ -96,6 +101,9 @@ export function agruparProdutos(
           interesseRecente: 3,
           unidades: [],
           arquivado: false,
+          precoOnline: null,
+          precoOnlineEm: null,
+          precoOnlineFonte: null,
         };
         mapa.set(chave, grupo);
       }
@@ -116,6 +124,10 @@ export function agruparProdutos(
       (a, b) => +new Date(a.cotacao.created_at) - +new Date(b.cotacao.created_at),
     );
     g.interesseRecente = cronologico.at(-1)?.item.interesse ?? 3;
+    const comOnline = cronologico.filter((r) => r.item.preco_medio_online != null).at(-1);
+    g.precoOnline = comOnline ? Number(comOnline.item.preco_medio_online) : null;
+    g.precoOnlineEm = comOnline?.item.preco_online_pesquisado_em ?? null;
+    g.precoOnlineFonte = comOnline?.item.preco_online_fonte ?? null;
     g.registros.sort((a, b) => Number(a.item.valor) - Number(b.item.valor));
   }
   lista.sort((a, b) => b.registros.length - a.registros.length);

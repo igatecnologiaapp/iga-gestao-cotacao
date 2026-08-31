@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.17"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -140,6 +140,10 @@ export type Database = {
           oportunidade: boolean
           pagamento: string | null
           prazo_entrega: string | null
+          preco_medio_online: number | null
+          preco_online_fonte: string | null
+          preco_online_pesquisado_em: string | null
+          preco_online_url: string | null
           qtd_minima: number | null
           quantidade: number | null
           unidade: string | null
@@ -163,6 +167,10 @@ export type Database = {
           oportunidade?: boolean
           pagamento?: string | null
           prazo_entrega?: string | null
+          preco_medio_online?: number | null
+          preco_online_fonte?: string | null
+          preco_online_pesquisado_em?: string | null
+          preco_online_url?: string | null
           qtd_minima?: number | null
           quantidade?: number | null
           unidade?: string | null
@@ -186,6 +194,10 @@ export type Database = {
           oportunidade?: boolean
           pagamento?: string | null
           prazo_entrega?: string | null
+          preco_medio_online?: number | null
+          preco_online_fonte?: string | null
+          preco_online_pesquisado_em?: string | null
+          preco_online_url?: string | null
           qtd_minima?: number | null
           quantidade?: number | null
           unidade?: string | null

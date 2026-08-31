@@ -11,6 +11,7 @@ import {
   precoUnidade,
   whatsappLink,
 } from "@/lib/cotacao";
+import { ResumoMercado } from "@/components/PrecoMercado";
 import { PedidoCompra } from "@/components/PedidoCompra";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -202,9 +203,22 @@ function DetalheCotacao() {
               <Tag>Interesse: {interesseLabel(item.interesse)}</Tag>
             </div>
 
+            {item.preco_medio_online != null && (
+              <div className="mt-2">
+                <ResumoMercado
+                  compra={Number(item.valor)}
+                  online={Number(item.preco_medio_online)}
+                  pesquisadoEm={item.preco_online_pesquisado_em}
+                  fonte={item.preco_online_fonte}
+                  url={item.preco_online_url}
+                />
+              </div>
+            )}
+
             {item.observacoes && (
               <p className="mt-2 rounded-lg bg-secondary p-2.5 text-sm">{item.observacoes}</p>
             )}
+
 
             <div className="mt-3 flex flex-wrap gap-2">
               <Button
