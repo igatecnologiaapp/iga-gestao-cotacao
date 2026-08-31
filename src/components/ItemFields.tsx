@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
-import { UNIDADES } from "@/lib/cotacao";
+import { ChevronDown, ExternalLink } from "lucide-react";
+import { UNIDADES, FONTES_PRECO_ONLINE, buscaPrecoUrl, parseValor } from "@/lib/cotacao";
 import { InteresseSelect } from "@/components/InteresseSelect";
+import { ResumoMercado } from "@/components/PrecoMercado";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,6 +30,10 @@ export type Draft = {
   observacoes: string;
   interesse: number;
   oportunidade: boolean;
+  preco_medio_online: string;
+  preco_online_fonte: string;
+  preco_online_url: string;
+  preco_online_pesquisado_em: string;
 };
 
 export const DRAFT_VAZIO: Draft = {
@@ -47,7 +52,12 @@ export const DRAFT_VAZIO: Draft = {
   observacoes: "",
   interesse: 3,
   oportunidade: false,
+  preco_medio_online: "",
+  preco_online_fonte: "",
+  preco_online_url: "",
+  preco_online_pesquisado_em: "",
 };
+
 
 export function Campo({ label, children }: { label: string; children: React.ReactNode }) {
   return (
