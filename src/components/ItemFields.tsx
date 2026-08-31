@@ -173,9 +173,17 @@ export function ItemFields({
         onClick={() => setAvancado((v) => !v)}
         className="flex w-full items-center justify-between rounded-lg bg-secondary px-3 py-2.5 text-sm font-semibold"
       >
-        Condições comerciais
+        Condições comerciais e preço de mercado
         <ChevronDown className={avancado ? "size-4 rotate-180" : "size-4"} />
       </button>
+
+      {!avancado && (
+        <SeloCompetitividade
+          compra={parseValor(draft.valor)}
+          online={parseValor(draft.preco_medio_online)}
+        />
+      )}
+
 
       {avancado && (
         <div className="space-y-3">
