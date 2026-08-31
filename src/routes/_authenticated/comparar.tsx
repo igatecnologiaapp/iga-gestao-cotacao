@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Search } from "lucide-react";
 import { useCotacoes, agruparProdutos, historicoProduto } from "@/lib/queries";
 import { brl, dataCurta, dataHora, normalize, precoUnidade } from "@/lib/cotacao";
+import { SeloCompetitividade } from "@/components/PrecoMercado";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 
