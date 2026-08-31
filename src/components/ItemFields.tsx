@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ChevronDown, ExternalLink } from "lucide-react";
 import { UNIDADES, FONTES_PRECO_ONLINE, buscaPrecoUrl, parseValor } from "@/lib/cotacao";
 import { InteresseSelect } from "@/components/InteresseSelect";
-import { ResumoMercado } from "@/components/PrecoMercado";
+import { ResumoMercado, SeloCompetitividade } from "@/components/PrecoMercado";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
