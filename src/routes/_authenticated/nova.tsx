@@ -193,7 +193,16 @@ function NovaCotacao() {
         observacoes: d.observacoes.trim(),
         interesse: d.interesse,
         oportunidade: d.oportunidade,
+        preco_medio_online: d.preco_medio_online.trim()
+          ? String(parseValor(d.preco_medio_online))
+          : "",
+        preco_online_pesquisado_em: d.preco_medio_online.trim()
+          ? d.preco_online_pesquisado_em || new Date().toISOString()
+          : "",
+        preco_online_fonte: d.preco_medio_online.trim() ? d.preco_online_fonte.trim() : "",
+        preco_online_url: d.preco_medio_online.trim() ? d.preco_online_url.trim() : "",
       }));
+
 
       const { data: novoId, error } = await supabase.rpc("criar_cotacao_completa", {
         p_fornecedor_id: fornecedorId,
