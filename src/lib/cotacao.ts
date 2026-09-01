@@ -42,6 +42,18 @@ export function num(value: number | null | undefined, digits = 0) {
   return (value ?? 0).toLocaleString("pt-BR", { maximumFractionDigits: digits });
 }
 
+/**
+ * Data (dd/mm/aaaa) sempre no fuso comercial brasileiro (America/Sao_Paulo),
+ * independente do fuso do servidor/dispositivo. O armazenamento continua em UTC;
+ * apenas a exibição é convertida, garantindo consistência entre preview,
+ * navegador, celular e Docker/VPS/EasyPanel.
+ */
+export function dataLocalBR(iso: string | Date) {
+  const d = typeof iso === "string" ? new Date(iso) : iso;
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
+}
+
 export function dataCurta(iso: string) {
   return new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
 }
