@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Search } from "lucide-react";
 import { useCotacoes, agruparProdutos, historicoProduto } from "@/lib/queries";
-import { brl, dataCurta, dataHora, normalize, precoUnidade } from "@/lib/cotacao";
+import { brl, dataCurta, dataHora, dataLocalBR, normalize, precoUnidade } from "@/lib/cotacao";
 import { SeloCompetitividade } from "@/components/PrecoMercado";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -65,7 +65,7 @@ function Comparar() {
             <p className="text-lg font-extrabold">{brl(grupo.precoOnline)}</p>
             <p className="text-[11px] text-muted-foreground">
               {grupo.precoOnlineEm
-                ? `Pesquisado em ${new Date(grupo.precoOnlineEm).toLocaleDateString("pt-BR")}`
+                ? `Pesquisado em ${dataLocalBR(grupo.precoOnlineEm)}`
                 : ""}
               {grupo.precoOnlineFonte ? ` · ${grupo.precoOnlineFonte}` : ""} · não entra no cálculo
               de menor/maior fornecedor.

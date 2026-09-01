@@ -1,4 +1,4 @@
-import { brl, compararMercado, percentualTexto } from "@/lib/cotacao";
+import { brl, compararMercado, dataLocalBR, percentualTexto } from "@/lib/cotacao";
 
 const TOM_CLASSE: Record<string, string> = {
   success: "bg-success/15 text-success",
@@ -59,7 +59,7 @@ export function ResumoMercado({
         <SeloCompetitividade compra={compra} online={online} />
         {pesquisadoEm && (
           <span className="text-[11px] text-muted-foreground">
-            Pesquisado em {new Date(pesquisadoEm).toLocaleDateString("pt-BR")}
+            Pesquisado em {dataLocalBR(pesquisadoEm)}
           </span>
         )}
         {fonte && <span className="text-[11px] text-muted-foreground">· {fonte}</span>}
@@ -75,8 +75,9 @@ export function ResumoMercado({
         )}
       </div>
       <p className="mt-2 text-[11px] leading-snug text-muted-foreground">
-        Margem bruta potencial (diferença entre compra e mercado). Não considera impostos, frete,
-        comissões e demais custos — não é lucro líquido.
+        Potencial comercial sobre o custo (markup potencial): diferença entre o preço de compra e o
+        preço médio online. Esta referência não representa lucro líquido e não considera impostos,
+        frete, taxas, comissões e demais custos da operação.
       </p>
     </div>
   );
