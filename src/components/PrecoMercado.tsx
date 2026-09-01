@@ -1,4 +1,4 @@
-import { brl, compararMercado, percentualTexto } from "@/lib/cotacao";
+import { brl, compararMercado, dataLocalBR, percentualTexto } from "@/lib/cotacao";
 
 const TOM_CLASSE: Record<string, string> = {
   success: "bg-success/15 text-success",
