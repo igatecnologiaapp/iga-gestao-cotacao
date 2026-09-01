@@ -75,8 +75,9 @@ export function ResumoMercado({
         )}
       </div>
       <p className="mt-2 text-[11px] leading-snug text-muted-foreground">
-        Margem bruta potencial (diferença entre compra e mercado). Não considera impostos, frete,
-        comissões e demais custos — não é lucro líquido.
+        Potencial comercial sobre o custo (markup potencial): diferença entre o preço de compra e o
+        preço médio online. Esta referência não representa lucro líquido e não considera impostos,
+        frete, taxas, comissões e demais custos da operação.
       </p>
     </div>
   );
