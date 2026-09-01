@@ -59,7 +59,7 @@ export function ResumoMercado({
         <SeloCompetitividade compra={compra} online={online} />
         {pesquisadoEm && (
           <span className="text-[11px] text-muted-foreground">
-            Pesquisado em {new Date(pesquisadoEm).toLocaleDateString("pt-BR")}
+            Pesquisado em {dataLocalBR(pesquisadoEm)}
           </span>
         )}
         {fonte && <span className="text-[11px] text-muted-foreground">· {fonte}</span>}
