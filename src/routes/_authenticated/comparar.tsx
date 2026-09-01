@@ -65,7 +65,7 @@ function Comparar() {
             <p className="text-lg font-extrabold">{brl(grupo.precoOnline)}</p>
             <p className="text-[11px] text-muted-foreground">
               {grupo.precoOnlineEm
-                ? `Pesquisado em ${new Date(grupo.precoOnlineEm).toLocaleDateString("pt-BR")}`
+                ? `Pesquisado em ${dataLocalBR(grupo.precoOnlineEm)}`
                 : ""}
               {grupo.precoOnlineFonte ? ` · ${grupo.precoOnlineFonte}` : ""} · não entra no cálculo
               de menor/maior fornecedor.
