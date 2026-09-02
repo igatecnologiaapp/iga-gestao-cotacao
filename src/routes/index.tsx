@@ -38,17 +38,13 @@ function Landing() {
         <div className="mx-auto max-w-3xl">
           <LogoIga className="mb-6 w-20 max-w-full rounded-2xl sm:w-24" />
           <span className="inline-flex rounded-full bg-primary-foreground/15 px-3 py-1 text-xs font-bold uppercase tracking-widest">
-            Pesquisa de mercado em campo
+            Pesquisas de preços de Produtos
           </span>
           <h1 className="mt-5 text-4xl font-extrabold leading-tight sm:text-5xl">
             Cotação Rápida
           </h1>
-          <p className="mt-4 max-w-xl text-base opacity-90">
-            O caderno digital inteligente de cotações. Abrir → cotar → registrar → comparar →
-            decidir, tudo pelo celular.
-          </p>
-          <Button asChild size="lg" className="mt-8 h-14 rounded-xl bg-card px-8 text-base font-bold text-foreground hover:bg-card/90">
-            <Link to="/auth">Entrar e começar</Link>
+          <Button asChild size="lg" className="mt-6 h-14 rounded-xl bg-card px-8 text-base font-bold text-foreground hover:bg-card/90">
+            <Link to="/auth">INICIAR COTAÇÃO</Link>
           </Button>
         </div>
       </div>
