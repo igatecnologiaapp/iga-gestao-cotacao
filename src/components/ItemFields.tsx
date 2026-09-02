@@ -187,33 +187,6 @@ export function ItemFields({
 
       {avancado && (
         <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
-            <Campo label="Marca">
-              <Input className="h-12" value={draft.marca} onChange={(e) => set("marca")(e.target.value)} maxLength={80} />
-            </Campo>
-            <Campo label="Modelo">
-              <Input className="h-12" value={draft.modelo} onChange={(e) => set("modelo")(e.target.value)} maxLength={80} />
-            </Campo>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Campo label="Pagamento">
-              <Input className="h-12" placeholder="PIX, 28 dias..." value={draft.pagamento} onChange={(e) => set("pagamento")(e.target.value)} maxLength={80} />
-            </Campo>
-            <Campo label="Compra mínima">
-              <Input className="h-12" inputMode="decimal" value={draft.qtd_minima} onChange={(e) => set("qtd_minima")(e.target.value)} />
-            </Campo>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Campo label="Prazo de entrega">
-              <Input className="h-12" value={draft.prazo_entrega} onChange={(e) => set("prazo_entrega")(e.target.value)} maxLength={80} />
-            </Campo>
-            <Campo label="Frete">
-              <Input className="h-12" value={draft.frete} onChange={(e) => set("frete")(e.target.value)} maxLength={80} />
-            </Campo>
-          </div>
-          <Campo label="Garantia">
-            <Input className="h-12" value={draft.garantia} onChange={(e) => set("garantia")(e.target.value)} maxLength={80} />
-          </Campo>
           <div className="space-y-2 rounded-xl border border-border p-3">
             <Campo label="Preço médio de venda na internet (opcional)">
               <div className="flex gap-2">
@@ -284,10 +257,37 @@ export function ItemFields({
               url={draft.preco_online_url}
             />
           </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Campo label="Marca">
+              <Input className="h-12" value={draft.marca} onChange={(e) => set("marca")(e.target.value)} maxLength={80} />
+            </Campo>
+            <Campo label="Modelo">
+              <Input className="h-12" value={draft.modelo} onChange={(e) => set("modelo")(e.target.value)} maxLength={80} />
+            </Campo>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Campo label="Pagamento">
+              <Input className="h-12" placeholder="PIX, 28 dias..." value={draft.pagamento} onChange={(e) => set("pagamento")(e.target.value)} maxLength={80} />
+            </Campo>
+            <Campo label="Compra mínima">
+              <Input className="h-12" inputMode="decimal" value={draft.qtd_minima} onChange={(e) => set("qtd_minima")(e.target.value)} />
+            </Campo>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Campo label="Prazo de entrega">
+              <Input className="h-12" value={draft.prazo_entrega} onChange={(e) => set("prazo_entrega")(e.target.value)} maxLength={80} />
+            </Campo>
+            <Campo label="Frete">
+              <Input className="h-12" value={draft.frete} onChange={(e) => set("frete")(e.target.value)} maxLength={80} />
+            </Campo>
+          </div>
+          <Campo label="Garantia">
+            <Input className="h-12" value={draft.garantia} onChange={(e) => set("garantia")(e.target.value)} maxLength={80} />
+          </Campo>
           <Campo label="Observações do produto">
             <Textarea value={draft.observacoes} onChange={(e) => set("observacoes")(e.target.value)} maxLength={1000} />
           </Campo>
-
         </div>
       )}
     </div>

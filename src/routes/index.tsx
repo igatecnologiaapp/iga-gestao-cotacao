@@ -34,9 +34,9 @@ const RECURSOS = [
 function Landing() {
   return (
     <div className="min-h-screen bg-background">
-      <div className="brand-gradient px-5 pb-16 pt-14 text-primary-foreground">
+      <div className="brand-gradient px-5 pb-16 pt-6 text-primary-foreground">
         <div className="mx-auto max-w-3xl">
-          <LogoIga className="mx-auto mb-6 w-24 max-w-full rounded-2xl sm:w-28" />
+          <LogoIga className="mb-6 w-20 max-w-full rounded-2xl sm:w-24" />
           <span className="inline-flex rounded-full bg-primary-foreground/15 px-3 py-1 text-xs font-bold uppercase tracking-widest">
             Pesquisa de mercado em campo
           </span>
